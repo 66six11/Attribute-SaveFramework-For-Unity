@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using SaveFramework;
@@ -30,7 +31,7 @@ namespace SaveFramework.Sample
 
         [Header("Advanced Data")]
         [Save("colors")] public Color[] FavoriteColors = new Color[] { Color.red, Color.blue, Color.green };
-        [Save("waypoints")] public Vector3[] Waypoints = new Vector3[0];
+        [Save("waypoints")] public Vector3[] Waypoints = Array.Empty<Vector3>();
 
         [Header("Demo Controls")]
         [SerializeField] private string saveSlot = "demo_slot";
@@ -57,7 +58,7 @@ namespace SaveFramework.Sample
         /// <summary>
         /// Save current stats to the demo slot
         /// </summary>
-        [ContextMenu("Save Stats")]
+        [ContextMenu("保存统计数据")]
         public void Save()
         {
             try
@@ -81,7 +82,7 @@ namespace SaveFramework.Sample
         /// <summary>
         /// Load stats from the demo slot
         /// </summary>
-        [ContextMenu("Load Stats")]
+        [ContextMenu("加载统计数据")]
         public void Load()
         {
             try
@@ -102,14 +103,14 @@ namespace SaveFramework.Sample
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"[PlayerStats] Failed to load: {ex.Message}");
+                Debug.LogError($"[PlayerStats] 加载失败: {ex.Message}");
             }
         }
 
         /// <summary>
         /// Reset stats to default values
         /// </summary>
-        [ContextMenu("Reset Stats")]
+        [ContextMenu("重置统计数据")]
         public void ResetStats()
         {
             Health = 100;
@@ -137,7 +138,7 @@ namespace SaveFramework.Sample
         /// <summary>
         /// Add some demo items to inventory
         /// </summary>
-        [ContextMenu("Add Demo Items")]
+        [ContextMenu("添加演示项目")]
         public void AddDemoItems()
         {
             Inventory.Add(1); // Sword
@@ -154,7 +155,7 @@ namespace SaveFramework.Sample
         /// <summary>
         /// Level up the player
         /// </summary>
-        [ContextMenu("Level Up")]
+        [ContextMenu("升级")]
         public void LevelUp()
         {
             Level++;
@@ -171,7 +172,7 @@ namespace SaveFramework.Sample
         private void OnGUI()
         {
             // Simple GUI for demo purposes
-            var rect = new Rect(10, 10, 300, 200);
+            var rect = new Rect(10, 10, 300, 500);
             GUILayout.BeginArea(rect);
             
             GUILayout.Label("Save Framework Demo", GUI.skin.box);

@@ -8,7 +8,7 @@ namespace SaveFramework.Components
     /// </summary>
     public class SaveId : MonoBehaviour
     {
-        [SerializeField, Tooltip("Unique identifier for this object's save data")]
+        [SerializeField, Tooltip("此对象保存数据的唯一标识符")]
         private string id = string.Empty;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SaveFramework.Components
         /// <summary>
         /// Generate a new unique identifier
         /// </summary>
-        [ContextMenu("Generate New ID")]
+        [ContextMenu("生成新 ID")]
         public void GenerateNewId()
         {
             id = Guid.NewGuid().ToString();

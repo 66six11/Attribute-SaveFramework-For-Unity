@@ -44,7 +44,7 @@ namespace SaveFramework.Runtime.Core
             if (!registries.Contains(registry))
             {
                 registries.Add(registry);
-                Debug.Log($"Registered save registry: {registry.GetType().Name}");
+                Debug.Log($"已注册的保存注册表: {registry.GetType().Name}");
             }
         }
 

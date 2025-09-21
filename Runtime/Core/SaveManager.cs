@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SaveFramework.Components;
 using UnityEngine;
 
@@ -12,13 +13,14 @@ namespace SaveFramework.Runtime.Core
     public class SaveManager : MonoBehaviour
     {
         private static SaveManager instance;
+
         public static SaveManager Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = FindObjectOfType<SaveManager>();
+                    instance = FindFirstObjectByType<SaveManager>();
                     if (instance == null)
                     {
                         var go = new GameObject("SaveManager");
@@ -26,6 +28,7 @@ namespace SaveFramework.Runtime.Core
                         DontDestroyOnLoad(go);
                     }
                 }
+
                 return instance;
             }
         }
@@ -69,14 +72,14 @@ namespace SaveFramework.Runtime.Core
         public void Save(string slotName)
         {
             if (string.IsNullOrEmpty(slotName))
-                throw new ArgumentException("Slot name cannot be null or empty", nameof(slotName));
+                throw new ArgumentException("插槽名称不能为空或空", nameof(slotName));
 
             try
             {
                 var saveData = new SaveData();
-                var saveIds = FindObjectsOfType<SaveId>();
+                var saveIds = FindObjectsByType<SaveId>(FindObjectsSortMode.None);
 
-                Debug.Log($"Starting save to slot '{slotName}' with {saveIds.Length} SaveId components");
+                Debug.Log($"开始保存到插槽'{slotName}' 使用 {saveIds.Length} SaveId 组件");
 
                 foreach (var saveId in saveIds)
                 {
@@ -87,11 +90,11 @@ namespace SaveFramework.Runtime.Core
                 }
 
                 backend.Save(slotName, saveData.Data);
-                Debug.Log($"Save completed successfully to slot '{slotName}' with {saveData.Count} entries");
+                Debug.Log($"已成功完成保存到插槽 '{slotName}' ： {saveData.Count} 条目");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to save to slot '{slotName}': {ex.Message}");
+                Debug.LogError($"无法保存到插槽 '{slotName}': {ex.Message}");
                 throw;
             }
         }
@@ -102,29 +105,40 @@ namespace SaveFramework.Runtime.Core
         public void Load(string slotName)
         {
             if (string.IsNullOrEmpty(slotName))
-                throw new ArgumentException("Slot name cannot be null or empty", nameof(slotName));
+                throw new ArgumentException("插槽名称不能为空或空", nameof(slotName));
 
             try
             {
                 var data = backend.Load(slotName);
                 var saveData = new SaveData(data);
-                var saveIds = FindObjectsOfType<SaveId>();
+                var saveIds = FindObjectsByType<SaveId>(FindObjectsSortMode.None);
 
-                Debug.Log($"Starting load from slot '{slotName}' with {saveData.Count} entries for {saveIds.Length} SaveId components");
-
+                Debug.Log($"从 slot '{slotName}' 开始加载，为 {saveIds.Length} SaveId 组件提供 {saveData.Count} 条目");
+                //打印数据
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("加载数据：");
+                foreach (var kvp in saveData.Data)
+                {
+                    sb.AppendLine(kvp.Key + " : " + kvp.Value);
+                }
+                Debug.Log(sb.ToString());
                 foreach (var saveId in saveIds)
                 {
                     if (saveId == null || string.IsNullOrEmpty(saveId.Id))
-                        continue;
+                    {
+                        Debug.Log($"SaveId 组件 '{saveId.name}' 未设置 ID，无法加载");
+                        continue; 
+                    }
+                       
 
                     LoadComponent(saveId, saveData);
                 }
 
-                Debug.Log($"Load completed successfully from slot '{slotName}'");
+                Debug.Log($"从插槽成功完成加载 '{slotName}'");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to load from slot '{slotName}': {ex.Message}");
+                Debug.LogError($"无法从插槽加载 '{slotName}': {ex.Message}");
                 throw;
             }
         }
@@ -181,7 +195,7 @@ namespace SaveFramework.Runtime.Core
                     }
                     catch (Exception ex)
                     {
-                        Debug.LogError($"Failed to save field '{entry.FieldName}' in {componentType.Name}: {ex.Message}");
+                        Debug.LogError($"无法保存字段 '{entry.FieldName}' in {componentType.Name}: {ex.Message}");
                     }
                 }
             }
@@ -212,9 +226,17 @@ namespace SaveFramework.Runtime.Core
                     if (saveData.HasKey(fullKey))
                     {
                         jsonValue = saveData.GetValue(fullKey, entry.FieldType);
+                     
+                        if (jsonValue == null)
+                        {
+                            
+                            Debug.LogWarning($" jsonValue是空值"); 
+                        }
                     }
                     else
                     {
+                     
+                     
                         // Try aliases
                         foreach (var alias in entry.Aliases)
                         {
@@ -232,13 +254,15 @@ namespace SaveFramework.Runtime.Core
                         try
                         {
                             var convertedValue = Converters.FromJsonValue(jsonValue, entry.FieldType);
+                            Debug.Log($"加载字段 '{entry.FieldName}' in {componentType.Name} : {convertedValue}");
                             entry.SetValue(component, convertedValue);
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError($"Failed to load field '{entry.FieldName}' in {componentType.Name}: {ex.Message}");
+                            Debug.LogError($"加载失败字段 '{entry.FieldName}' in {componentType.Name}: {ex.Message}");
                         }
                     }
+               
                 }
             }
         }
@@ -250,14 +274,14 @@ namespace SaveFramework.Runtime.Core
 
             var entries = new Dictionary<string, SaveEntry>();
 
-            // First try to get from generated registry
+            // 首先尝试从生成的注册表中获取
             if (SaveRegistryManager.HasRegistryFor(componentType))
             {
                 entries = SaveRegistryManager.GetSaveEntries(componentType);
             }
             else
             {
-                // Fallback to reflection-based discovery
+                // 回退到基于反射的发现
                 entries = DiscoverSaveEntriesReflection(componentType);
             }
 

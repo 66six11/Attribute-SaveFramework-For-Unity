@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SaveFramework.Runtime.Core
 {
     /// <summary>
-    /// Container for save data with type-safe access
+    /// 用于保存数据的容器，具有类型安全访问
     /// </summary>
     public class SaveData
     {
@@ -31,48 +32,47 @@ namespace SaveFramework.Runtime.Core
         public void SetValue(string key, object value)
         {
             if (string.IsNullOrEmpty(key))
-                throw new ArgumentException("Key cannot be null or empty", nameof(key));
+                throw new ArgumentException("键不能为null或空", nameof(key));
 
             data[key] = value;
         }
 
+        // /// <summary>
+        // /// 获取给定键的值，默认值可选
+        // /// </summary>
+        // public T GetValue<T>(string key, T defaultValue = default(T))
+        // {
+        //     if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
+        //         return defaultValue;
+        //
+        //     try
+        //     {
+        //         if (value is T directValue)
+        //             return directValue;
+        //         Debug.LogWarning($"{value}:type {defaultValue} :转换值为 {(T)Converters.FromJsonValue(value, typeof(T))}");
+        //         // 尝试使用转换器系统进行转换
+        //         return (T)Converters.FromJsonValue(value, typeof(T));
+        //     }
+        //     catch
+        //     {
+        //         Debug.LogWarning(" converter 转换失败");
+        //         return defaultValue;
+        //     }
+        // }
+
         /// <summary>
-        /// Get a value for the given key, with optional default
-        /// </summary>
-        public T GetValue<T>(string key, T defaultValue = default(T))
-        {
-            if (string.IsNullOrEmpty(key) || !data.ContainsKey(key))
-                return defaultValue;
-
-            try
-            {
-                var value = data[key];
-                if (value is T directValue)
-                    return directValue;
-
-                // Try to convert using the Converters system
-                return (T)Converters.FromJsonValue(value, typeof(T));
-            }
-            catch
-            {
-                return defaultValue;
-            }
-        }
-
-        /// <summary>
-        /// Get a value for the given key as object
+        /// 获取给定键的值作为对象
         /// </summary>
         public object GetValue(string key, Type targetType, object defaultValue = null)
         {
-            if (string.IsNullOrEmpty(key) || !data.ContainsKey(key))
+            if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
                 return defaultValue;
-
+        
             try
             {
-                var value = data[key];
                 if (targetType.IsInstanceOfType(value))
                     return value;
-
+        
                 // Try to convert using the Converters system
                 return Converters.FromJsonValue(value, targetType);
             }
@@ -83,7 +83,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Check if a key exists
+        /// 检查密钥是否存在
         /// </summary>
         public bool HasKey(string key)
         {

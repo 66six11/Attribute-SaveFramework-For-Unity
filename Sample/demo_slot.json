@@ -1,0 +1,68 @@
+{
+  "Player.PlayerStats.health": 100,
+  "Player.PlayerStats.mana": 50,
+  "Player.PlayerStats.level": 1,
+  "Player.PlayerStats.exp": 0.0,
+  "Player.PlayerStats.pos": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "Player.PlayerStats.rot": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "Player.PlayerStats.Inventory": [
+    0,
+    3,
+    2
+  ],
+  "Player.PlayerStats.coins": 4,
+  "Player.PlayerStats.volume": 6.0,
+  "Player.PlayerStats.difficulty": "Hard",
+  "Player.PlayerStats.colors": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      1.0
+    ],
+    [
+      0.764151,
+      0.0,
+      0.407150358,
+      1.0
+    ]
+  ],
+  "Player.PlayerStats.waypoints": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      124.0,
+      124.0,
+      0.0
+    ],
+    [
+      0.0,
+      12.0,
+      4.0
+    ]
+  ]
+}
