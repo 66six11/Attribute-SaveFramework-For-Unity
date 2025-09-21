@@ -1,0 +1,18 @@
+{
+    "name": "SaveFrameworl.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6e1767d58e6fcb54e96d7476a6877940"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
