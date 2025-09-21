@@ -1,4 +1,5 @@
 # SaveFramework 使用说明
+- 测试中~~
 
 ## 概述
 
@@ -12,7 +13,7 @@ SaveFramework 是一个专为 Unity 设计的轻量级、易用的存档系统�
 - ✅ **类型安全**: 编译时检查，避免运行时错误
 - ✅ **扩展性强**: 支持自定义类型转换器
 - ✅ **性能优化**: 使用代码生成避免反射开销
-- ✅ **跨平台**: 支持所有 Unity 目标平台
+
 
 ## 快速开始
 
@@ -117,15 +118,11 @@ public class GameData : MonoBehaviour
 [Save] public Vector4 Position4D;
 [Save] public Quaternion Rotation;
 [Save] public Color PlayerColor;
+[Save] public Bounds bounds;
 ```
 
 **数组和集合：**
-```csharp
-[Save] public int[] IntArray;
-[Save] public Vector3[] Waypoints;
-[Save] public List<string> ItemNames;
-[Save] public Color[] FavoriteColors;
-```
+
 
 **枚举类型：**
 ```csharp
@@ -197,29 +194,29 @@ public class CloudSaveBackend : ISaveBackend
 {
     public void Save(string slotName, Dictionary<string, object> data)
     {
-        // 实现云存档保存逻辑
+        // 实现存档保存逻辑
     }
     
     public Dictionary<string, object> Load(string slotName)
     {
-        // 实现云存档加载逻辑
+        // 实现存档加载逻辑
         return new Dictionary<string, object>();
     }
     
     public bool HasSave(string slotName)
     {
-        // 检查云端是否存在存档
+        // 检查端是否存在存档
         return false;
     }
     
     public void DeleteSave(string slotName)
     {
-        // 删除云端存档
+        // 删除存档
     }
     
     public string[] GetSaveSlots()
     {
-        // 获取所有云端存档槽位
+        // 获取所有端存档槽位
         return new string[0];
     }
 }
@@ -232,24 +229,24 @@ public class CloudSaveBackend : ISaveBackend
 对于框架不原生支持的类型，可以实现自定义转换器：
 
 ```csharp
-using SaveFramework.Runtime.Core.Conversion;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
-[AutoRegisterConverter]
-public class DateTimeConverter : IValueConverter
+namespace SaveFramework.Runtime.Core.Conversion.BuiltIn
 {
-    public bool CanConvert(Type type)
+   
+    [AutoRegisterConverter]
+    public class BoundsConverter : ValueConverter<Bounds>
     {
-        return type == typeof(DateTime);
-    }
-    
-    public object ToJsonValue(object value)
-    {
-        return ((DateTime)value).ToBinary();
-    }
-    
-    public object FromJsonValue(object jsonValue, Type targetType)
-    {
-        return DateTime.FromBinary((long)jsonValue);
+        public override object ToJsonValue(Bounds value)
+        {
+           
+        }
+
+        public override Bounds FromJsonValue(object jsonValue)
+        {
+          
+        }
     }
 }
 ```
@@ -842,29 +839,7 @@ public class RobustSaveManager : MonoBehaviour
 ```
 
 ### 4. 版本控制
-```csharp
-public class VersionedSaveData : MonoBehaviour
-{
-    [Save("save_version")] public int SaveVersion = 1;
-    [Save] public int PlayerData;
-
-    private void Start()
-    {
-        // 检查存档版本兼容性
-        if (SaveVersion < 1)
-        {
-            MigrateFromOldVersion();
-        }
-    }
-
-    private void MigrateFromOldVersion()
-    {
-        // 实现数据迁移逻辑
-        Debug.Log("正在迁移旧版本存档数据...");
-        SaveVersion = 1;
-    }
-}
-```
+施工中。。。。
 
 ## 许可证和支持
 
