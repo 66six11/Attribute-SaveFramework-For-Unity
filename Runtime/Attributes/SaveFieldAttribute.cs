@@ -1,19 +1,46 @@
 using System;
+using UnityEngine;
 
-namespace SaveFramework
+namespace SaveFramework.Runtime.Core.Attributes
 {
-    /// <summary>
-    /// Alias for SaveAttribute to provide alternative naming
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public sealed class SaveFieldAttribute : SaveAttribute
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+    public class SaveFieldAttribute : Attribute
     {
-        public SaveFieldAttribute() : base()
+        public string Key { get; }
+        public string[] Aliases { get; }
+        public Type ConverterType { get; }
+
+        public SaveFieldAttribute()
         {
+            Key = string.Empty;
+            Aliases = new string[0];
+            ConverterType = null;
         }
 
-        public SaveFieldAttribute(string key, params string[] aliases) : base(key, aliases)
+        public SaveFieldAttribute(string key, params string[] aliases)
         {
+            Key = key ?? string.Empty;
+            Aliases = aliases ?? new string[0];
+            ConverterType = null;
+        }
+
+        public SaveFieldAttribute(Type converterType)
+        {
+            Key = string.Empty;
+            Aliases = new string[0];
+            ConverterType = converterType;
+        }
+
+        public SaveFieldAttribute(string key, Type converterType, params string[] aliases)
+        {
+            Key = key ?? string.Empty;
+            Aliases = aliases ?? new string[0];
+            ConverterType = converterType;
+        }
+
+        public string EffectiveKey(string fieldName)
+        {
+            return string.IsNullOrEmpty(Key) ? fieldName : Key;
         }
     }
 }
