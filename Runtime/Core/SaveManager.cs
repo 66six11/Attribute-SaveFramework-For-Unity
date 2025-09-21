@@ -301,7 +301,12 @@ namespace SaveFramework.Runtime.Core
                 if (saveAttr == null)
                 {
                     // Also check for SaveFieldAttribute
-                    saveAttr = field.GetCustomAttributes(typeof(SaveFieldAttribute), true).FirstOrDefault() as SaveFieldAttribute;
+                    var saveFieldAttr = field.GetCustomAttributes(typeof(SaveFramework.Runtime.Core.Attributes.SaveFieldAttribute), true).FirstOrDefault() as SaveFramework.Runtime.Core.Attributes.SaveFieldAttribute;
+                    if (saveFieldAttr != null)
+                    {
+                        // Create a compatible SaveAttribute from SaveFieldAttribute
+                        saveAttr = new SaveAttribute(saveFieldAttr.Key, saveFieldAttr.Aliases);
+                    }
                 }
 
                 if (saveAttr == null)
