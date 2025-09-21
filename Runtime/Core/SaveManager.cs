@@ -222,40 +222,41 @@ namespace SaveFramework.Runtime.Core
                     var fullKey = $"{saveId.Id}.{componentType.Name}.{entry.Key}";
 
                     // Try the main key first, then try aliases
-                    object jsonValue = null;
+                    object valueObj = null;
                     if (saveData.HasKey(fullKey))
                     {
-                        jsonValue = saveData.GetValue(fullKey, entry.FieldType);
-                     
-                        if (jsonValue == null)
-                        {
-                            
-                            Debug.LogWarning($" jsonValue是空值"); 
-                        }
+                        valueObj = saveData.GetValue(fullKey, entry.FieldType);
                     }
                     else
                     {
-                     
-                     
                         // Try aliases
                         foreach (var alias in entry.Aliases)
                         {
                             var aliasKey = $"{saveId.Id}.{componentType.Name}.{alias}";
                             if (saveData.HasKey(aliasKey))
                             {
-                                jsonValue = saveData.GetValue(aliasKey, entry.FieldType);
+                                valueObj = saveData.GetValue(aliasKey, entry.FieldType);
                                 break;
                             }
                         }
                     }
 
-                    if (jsonValue != null)
+                    if (valueObj != null)
                     {
                         try
                         {
-                            var convertedValue = Converters.FromJsonValue(jsonValue, entry.FieldType);
-                            Debug.Log($"加载字段 '{entry.FieldName}' in {componentType.Name} : {convertedValue}");
-                            entry.SetValue(component, convertedValue);
+                            // Direct assignment if value is already the correct type (avoid double-conversion)
+                            if (entry.FieldType.IsInstanceOfType(valueObj))
+                            {
+                                Debug.Log($"直接加载字段 '{entry.FieldName}' in {componentType.Name} : {valueObj}");
+                                entry.SetValue(component, valueObj);
+                            }
+                            else
+                            {
+                                var convertedValue = Converters.FromJsonValue(valueObj, entry.FieldType);
+                                Debug.Log($"转换加载字段 '{entry.FieldName}' in {componentType.Name} : {convertedValue}");
+                                entry.SetValue(component, convertedValue);
+                            }
                         }
                         catch (Exception ex)
                         {
