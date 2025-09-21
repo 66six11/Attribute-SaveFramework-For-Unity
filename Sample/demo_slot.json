@@ -4,8 +4,8 @@
   "Player.PlayerStats.level": 1,
   "Player.PlayerStats.exp": 0.0,
   "Player.PlayerStats.pos": [
-    0.0,
-    0.0,
+    2.526,
+    -0.136,
     0.0
   ],
   "Player.PlayerStats.rot": [
@@ -14,14 +14,10 @@
     0.0,
     1.0
   ],
-  "Player.PlayerStats.Inventory": [
-    0,
-    3,
-    2
-  ],
-  "Player.PlayerStats.coins": 4,
-  "Player.PlayerStats.volume": 6.0,
-  "Player.PlayerStats.difficulty": "Hard",
+  "Player.PlayerStats.Inventory": [],
+  "Player.PlayerStats.coins": 0,
+  "Player.PlayerStats.volume": 1.0,
+  "Player.PlayerStats.difficulty": "Normal",
   "Player.PlayerStats.colors": [
     [
       1.0,
@@ -40,29 +36,98 @@
       1.0,
       0.0,
       1.0
+    ]
+  ],
+  "Player.PlayerStats.waypoints": [],
+  "Player.MoreTest. My Int ": 0,
+  "Player.MoreTest. My String ": "",
+  "Player.MoreTest. My Float ": 0.0,
+  "Player.MoreTest. My Bool ": false,
+  "Player.MoreTest. My Vector3 ": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "Player.MoreTest. My Quaternion ": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "Player.MoreTest. My Color ": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "Player.MoreTest. My Int Array ": [
+    1,
+    2,
+    3
+  ],
+  "Player.MoreTest. My String Array ": [
+    "Hello",
+    "World"
+  ],
+  "Player.MoreTest. My Float Array ": [
+    1.2,
+    3.4,
+    5.6
+  ],
+  "Player.MoreTest. My Bool Array ": [
+    true,
+    false,
+    true
+  ],
+  "Player.MoreTest. My Vector3 Array ": [
+    [
+      1.0,
+      2.0,
+      3.0
     ],
     [
-      0.764151,
+      4.0,
+      5.0,
+      6.0
+    ]
+  ],
+  "Player.MoreTest. My Quaternion Array ": [
+    [
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    [
+      5.0,
+      6.0,
+      7.0,
+      8.0
+    ]
+  ],
+  "Player.MoreTest. My Color Array ": [
+    [
+      1.0,
       0.0,
-      0.407150358,
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
       1.0
     ]
   ],
-  "Player.PlayerStats.waypoints": [
-    [
-      0.0,
-      0.0,
-      0.0
-    ],
-    [
-      124.0,
-      124.0,
-      0.0
-    ],
-    [
-      0.0,
-      12.0,
-      4.0
-    ]
-  ]
+  "Player.MoreTest. My UInt ": 10,
+  "Player.MoreTest. My Long ": 1000000000000000000,
+  "Player.MoreTest. My ULong ": 1000000000000000000,
+  "Player.MoreTest. My Char ": "A",
+  "Player.MoreTest. My Byte ": 255
 }
