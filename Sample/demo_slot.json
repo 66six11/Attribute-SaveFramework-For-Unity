@@ -39,26 +39,26 @@
     ]
   ],
   "Player.PlayerStats.waypoints": [],
-  "Player.MoreTest. My Int ": 0,
-  "Player.MoreTest. My String ": "",
-  "Player.MoreTest. My Float ": 0.0,
-  "Player.MoreTest. My Bool ": false,
+  "Player.MoreTest. My Int ": 10,
+  "Player.MoreTest. My String ": "My String",
+  "Player.MoreTest. My Float ": 3.14,
+  "Player.MoreTest. My Bool ": true,
   "Player.MoreTest. My Vector3 ": [
-    0.0,
-    0.0,
-    0.0
+    1.0,
+    2.0,
+    3.0
   ],
   "Player.MoreTest. My Quaternion ": [
-    0.0,
-    0.0,
-    0.0,
-    0.0
+    1.0,
+    2.0,
+    3.0,
+    4.0
   ],
   "Player.MoreTest. My Color ": [
+    1.0,
     0.0,
     0.0,
-    0.0,
-    0.0
+    1.0
   ],
   "Player.MoreTest. My Int Array ": [
     1,
@@ -125,9 +125,18 @@
       1.0
     ]
   ],
-  "Player.MoreTest. My UInt ": 90,
+  "Player.MoreTest. My UInt ": 10,
   "Player.MoreTest. My Long ": 1000000000000000000,
   "Player.MoreTest. My ULong ": 1000000000000000000,
   "Player.MoreTest. My Char ": "A",
-  "Player.MoreTest. My Byte ": 255
+  "Player.MoreTest. My Byte ": 255,
+  "Player.MoreTest. My SByte ": 127,
+  "Player.MoreTest. My Bounds ": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ]
 }

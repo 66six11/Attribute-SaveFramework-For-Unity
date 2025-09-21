@@ -29,9 +29,9 @@ public class MoreTest : MonoBehaviour
     [Save(" My ULong ")] public ulong myULong = 1000000000000000000;
     [Save(" My Char ")] public char myChar = 'A';
     [Save(" My Byte ")] public byte myByte = 255;
-
-    //不支持的类型
     [Save(" My SByte ")] public sbyte mySByte = sbyte.MaxValue;
+    //不支持的类型
+    [Save(" My Bounds ")] public Bounds myBounds = new Bounds();
     [Save(" My Transform ")] public Transform myTransform;
 
 

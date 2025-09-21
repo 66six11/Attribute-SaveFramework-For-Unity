@@ -23,57 +23,9 @@ namespace SaveFramework.Runtime.Core.Conversion
         private static bool isInitialized = false;
 
         /// <summary>
-        /// Initialize the converter registry by discovering and registering all auto-registered converters
+        /// 通过发现和注册所有自动注册的转换器来初始化转换器注册表
         /// </summary>
-        public static void Initialize()
-        {
-            if (isInitialized)
-                return;
-
-            try
-            {
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-                foreach (var assembly in assemblies)
-                {
-                    try
-                    {
-                        var converterTypes = assembly.GetTypes()
-                                                     .Where(type => type.GetCustomAttribute<AutoRegisterConverterAttribute>() != null)
-                                                     .Where(type => typeof(IValueConverter).IsAssignableFrom(type))
-                                                     .Where(type => !type.IsAbstract && !type.IsInterface);
-
-                        foreach (var converterType in converterTypes)
-                        {
-                            try
-                            {
-                                var instance = Activator.CreateInstance(converterType) as IValueConverter;
-                                if (instance != null)
-                                {
-                                    RegisterConverter(instance);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogWarning($"Failed to create converter instance {converterType.Name}: {ex.Message}");
-                            }
-                        }
-                    }
-                    catch (ReflectionTypeLoadException ex)
-                    {
-                        // Skip assemblies that can't be loaded
-                        Debug.LogWarning($"Failed to load types from assembly {assembly.FullName}: {ex.Message}");
-                    }
-                }
-
-                isInitialized = true;
-                Debug.Log($"ConverterRegistry initialized with {converters.Count} converters");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to initialize ConverterRegistry: {ex.Message}");
-            }
-        }
+       
 
         /// <summary>
         /// Manually register a converter
@@ -82,16 +34,16 @@ namespace SaveFramework.Runtime.Core.Conversion
         {
             if (converter == null)
                 return;
-
-            converters[converter.TargetType] = converter;
+            if (!converters.TryAdd(converter.TargetType, converter))
+                return;
         }
 
         /// <summary>
-        /// Get a converter for the specified type
+        /// 获取指定类型的转换器
         /// </summary>
         public static IValueConverter GetConverter(Type type)
         {
-            EnsureInitialized();
+          
             return converters.TryGetValue(type, out var converter) ? converter : null;
         }
 
@@ -100,7 +52,7 @@ namespace SaveFramework.Runtime.Core.Conversion
         /// </summary>
         public static bool HasConverter(Type type)
         {
-            EnsureInitialized();
+          
             return converters.ContainsKey(type);
         }
 
@@ -109,7 +61,7 @@ namespace SaveFramework.Runtime.Core.Conversion
         /// </summary>
         public static Type[] GetSupportedTypes()
         {
-            EnsureInitialized();
+            
             return converters.Keys.ToArray();
         }
 
@@ -141,19 +93,6 @@ namespace SaveFramework.Runtime.Core.Conversion
             return false;
         }
 
-        private static void EnsureInitialized()
-        {
-            if (!isInitialized)
-                Initialize();
-        }
-
-        /// <summary>
-        /// Initialize the registry on Unity startup
-        /// </summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void InitializeOnStartup()
-        {
-            Initialize();
-        }
+      
     }
 }
