@@ -132,7 +132,7 @@ namespace SaveFramework.Sample
 
             if (logDebugInfo)
             {
-                Debug.Log("[PlayerStats] Stats reset to default values");
+                Debug.Log("[PlayerStats] 统计数据重置为默认值");
             }
         }
 
@@ -149,7 +149,7 @@ namespace SaveFramework.Sample
 
             if (logDebugInfo)
             {
-                Debug.Log("[PlayerStats] Added demo items to inventory");
+                Debug.Log("[PlayerStats] 将演示物品添加到库存中");
             }
         }
 
@@ -166,7 +166,7 @@ namespace SaveFramework.Sample
 
             if (logDebugInfo)
             {
-                Debug.Log($"[PlayerStats] Leveled up to {Level}! Health: {Health}, Mana: {Mana}");
+                Debug.Log($"[PlayerStats] 升级到 {Level}! Health: {Health}, Mana: {Mana}");
             }
         }
 
@@ -176,7 +176,7 @@ namespace SaveFramework.Sample
             var rect = new Rect(10, 10, 300, 500);
             GUILayout.BeginArea(rect);
             
-            GUILayout.Label("Save Framework Demo", GUI.skin.box);
+            GUILayout.Label("保存框架演示", GUI.skin.box);
             GUILayout.Label($"Health: {Health} | Mana: {Mana} | Level: {Level}");
             GUILayout.Label($"Position: {Position:F1}");
             GUILayout.Label($"Items: {Inventory.Count} | Coins: {Currency}");
@@ -186,13 +186,13 @@ namespace SaveFramework.Sample
             GUILayout.Label("Controls:");
             GUILayout.Label("F5 - Save | F9 - Load");
             
-            if (GUILayout.Button("Reset Stats"))
+            if (GUILayout.Button("重置统计数据"))
                 ResetStats();
             
-            if (GUILayout.Button("Add Demo Items"))
+            if (GUILayout.Button("添加演示item"))
                 AddDemoItems();
                 
-            if (GUILayout.Button("Level Up"))
+            if (GUILayout.Button("升级"))
                 LevelUp();
             
             GUILayout.EndArea();
