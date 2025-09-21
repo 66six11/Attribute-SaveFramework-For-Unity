@@ -407,7 +407,7 @@ namespace SaveFramework.Editor
             {
                 EditorApplication.delayCall += () =>
                 {
-                    Debug.Log("Auto-generating save framework registration on startup...");
+                    Debug.Log("启动时自动生成保存框架注册...");
                     GenerateRegistration();
                 };
             }
