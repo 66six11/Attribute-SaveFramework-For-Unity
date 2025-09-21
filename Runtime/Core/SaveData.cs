@@ -22,7 +22,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get the underlying data dictionary
+        /// 获取基础数据字典
         /// </summary>
         public Dictionary<string, object> Data => data;
 
@@ -37,54 +37,6 @@ namespace SaveFramework.Runtime.Core
             data[key] = value;
         }
 
-        // /// <summary>
-        // /// 获取给定键的值，默认值可选
-        // /// </summary>
-        // public T GetValue<T>(string key, T defaultValue = default(T))
-        // {
-        //     if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
-        //         return defaultValue;
-        //
-        //     try
-        //     {
-        //         if (value is T directValue)
-        //             return directValue;
-        //         Debug.LogWarning($"{value}:type {defaultValue} :转换值为 {(T)Converters.FromJsonValue(value, typeof(T))}");
-        //         // 尝试使用转换器系统进行转换
-        //         return (T)Converters.FromJsonValue(value, typeof(T));
-        //     }
-        //     catch
-        //     {
-        //         Debug.LogWarning(" converter 转换失败");
-        //         return defaultValue;
-        //     }
-        // }
-
-        // /// <summary>
-        // /// 获取给定键的值，默认值可选 (Type-safe generic version)
-        // /// </summary>
-        // public T GetValue<T>(string key, T defaultValue = default(T))
-        // {
-        //     if (typeof(T) == typeof(System.Type))
-        //         throw new InvalidOperationException("SaveFramework: 误用 GetValue<T> —— 推断到 T == System.Type。请改用非泛型重载 GetValue(key, targetType: typeof(YourType))。");
-        //
-        //     if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
-        //         return defaultValue;
-        //
-        //     try
-        //     {
-        //         if (value is T directValue)
-        //             return directValue;
-        //         
-        //         // 尝试使用转换器系统进行转换
-        //         return (T)Converters.FromJsonValue(value, typeof(T));
-        //     }
-        //     catch
-        //     {
-        //         Debug.LogWarning($"SaveFramework: 转换失败 key '{key}' 到类型 {typeof(T).Name}");
-        //         return defaultValue;
-        //     }
-        // }
 
         /// <summary>
         /// 获取给定键的值作为对象
@@ -93,12 +45,12 @@ namespace SaveFramework.Runtime.Core
         {
             if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
                 return defaultValue;
-        
+
             try
             {
                 if (targetType.IsInstanceOfType(value))
                     return value;
-        
+
                 // Try to convert using the Converters system
                 return Converters.FromJsonValue(value, targetType);
             }
@@ -117,7 +69,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Remove a key from the data
+        /// 从数据中删除key
         /// </summary>
         public bool RemoveKey(string key)
         {
@@ -128,12 +80,12 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get all keys
+        ///获取所有keys
         /// </summary>
         public ICollection<string> Keys => data.Keys;
 
         /// <summary>
-        /// Clear all data
+        ///清除所有数据
         /// </summary>
         public void Clear()
         {
@@ -141,7 +93,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get the number of entries
+        ///获取条目数量
         /// </summary>
         public int Count => data.Count;
     }

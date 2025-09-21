@@ -14,7 +14,7 @@ namespace SaveFramework.Editor
         private const string GeneratedFile = "GeneratedConverterRegistry.cs";
         private const string GeneratedNamespace = "SaveFramework.Runtime.Core.Conversion.Generated";
 
-        [MenuItem("Tools/SaveFramework/Pre-generate Converter Registry (Codegen)")]
+        [MenuItem("Tools/Save Framework/预生成转换器注册表 （Codegen）")]
         public static void Generate()
         {
             try

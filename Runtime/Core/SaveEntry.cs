@@ -32,7 +32,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get the value from the component instance
+        /// 从组件实例获取值
         /// </summary>
         public object GetValue(object component)
         {
@@ -43,7 +43,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Set the value on the component instance
+        /// 在组件实例上设置值
         /// </summary>
         public void SetValue(object component, object value)
         {
@@ -57,7 +57,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Check if this entry matches the given key (including aliases)
+        /// 检查此条目是否与给定的键（包括别名）匹配
         /// </summary>
         public bool MatchesKey(string searchKey)
         {

@@ -18,7 +18,7 @@ namespace SaveFramework.Editor
 
         private const string TargetAttributeSimpleName = "SaveFieldAttribute";
 
-        [MenuItem("Tools/SaveFramework/Validate Save Fields")]
+        [MenuItem("Tools/Save Framework/Validate Save Fields")]
         public static void ValidateMenu()
         {
             var issues = ValidateAll();

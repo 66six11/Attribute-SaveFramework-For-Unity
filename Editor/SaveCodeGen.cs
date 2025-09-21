@@ -13,7 +13,7 @@ using SaveFramework.Runtime.Attributes;
 namespace SaveFramework.Editor
 {
     /// <summary>
-    /// Editor tool for generating save framework registration code
+    /// 用于生成保存框架注册码的编辑器工具
     /// </summary>
     public static class SaveCodeGen
     {
