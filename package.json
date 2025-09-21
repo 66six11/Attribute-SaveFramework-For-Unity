@@ -27,5 +27,8 @@
       "path": "Sample"
     }
   ],
-  "type": "library"
+  "type": "library",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
 }
