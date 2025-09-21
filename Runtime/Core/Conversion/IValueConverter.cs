@@ -3,44 +3,44 @@ using System;
 namespace SaveFramework.Runtime.Core.Conversion
 {
     /// <summary>
-    /// Non-generic interface for value converters, allowing storage by Type in registry
+    /// 值转换器的非通用接口，允许在注册表中按类型存储
     /// </summary>
     public interface IValueConverter
     {
         /// <summary>
-        /// The type this converter handles
+        /// 此转换器处理的类型
         /// </summary>
         Type TargetType { get; }
 
         /// <summary>
-        /// Convert a value to JSON-serializable format
+        /// 将值转换为 JSON 可序列化格式
         /// </summary>
         object ToJsonValue(object value);
 
         /// <summary>
-        /// Convert a JSON value back to the target type
+        ///将 JSON 值转换回目标类型
         /// </summary>
         object FromJsonValue(object jsonValue);
     }
 
     /// <summary>
-    /// Generic interface for strongly-typed value converters
+    /// 强类型值转换器的通用接口
     /// </summary>
     public interface IValueConverter<T> : IValueConverter
     {
         /// <summary>
-        /// Convert a strongly-typed value to JSON-serializable format
+        /// 将强类型值转换为 JSON 可序列化格式
         /// </summary>
         object ToJsonValue(T value);
 
         /// <summary>
-        /// Convert a JSON value back to the strongly-typed target
+        /// 将 JSON 值转换回强类型目标
         /// </summary>
         T FromJsonValue(object jsonValue);
     }
 
     /// <summary>
-    /// Base class for implementing value converters
+    /// 用于实现值转换器的基类
     /// </summary>
     public abstract class ValueConverter<T> : IValueConverter<T>
     {
