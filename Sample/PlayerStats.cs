@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using SaveFramework;
+using SaveFramework.Runtime.Attributes;
 using SaveFramework.Runtime.Core;
 
 namespace SaveFramework.Sample

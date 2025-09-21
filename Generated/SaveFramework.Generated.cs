@@ -1,6 +1,6 @@
 ﻿// 此文件由保存框架代码生成器自动生成
 // 请勿手动修改此文件，因为更改将被覆盖
-// 生成时间： 2025-09-21 22:17:18
+// 生成时间： 2025-09-21 23:14:40
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace SaveFramework.Generated
         {
             typeof(MoreTest),
             typeof(SaveFramework.Sample.PlayerStats),
+            typeof(SaveFramework.Test.SaveLoadIntegrationTest),
         };
 
         public override bool HandlesType(Type componentType)
@@ -442,6 +443,76 @@ namespace SaveFramework.Generated
                     null, // 直接访问不需要 FieldInfo
                     obj => ((SaveFramework.Sample.PlayerStats)obj).Waypoints,
                     (obj, val) => ((SaveFramework.Sample.PlayerStats)obj).Waypoints = (UnityEngine.Vector3[])val
+                );
+
+                return;
+            }
+
+            if (componentType == typeof(SaveFramework.Test.SaveLoadIntegrationTest))
+            {
+                // 字段: testVector3Array
+                var aliases_testVector3Array_0 = new string[0];
+                entries[" Test Vector3 Array "] = new SaveEntry(
+                    " Test Vector3 Array ",
+                    aliases_testVector3Array_0,
+                    typeof(SaveFramework.Test.SaveLoadIntegrationTest),
+                    "testVector3Array",
+                    typeof(UnityEngine.Vector3[]),
+                    null, // 直接访问不需要 FieldInfo
+                    obj => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testVector3Array,
+                    (obj, val) => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testVector3Array = (UnityEngine.Vector3[])val
+                );
+
+                // 字段: testColorArray
+                var aliases_testColorArray_1 = new string[0];
+                entries[" Test Color Array "] = new SaveEntry(
+                    " Test Color Array ",
+                    aliases_testColorArray_1,
+                    typeof(SaveFramework.Test.SaveLoadIntegrationTest),
+                    "testColorArray",
+                    typeof(UnityEngine.Color[]),
+                    null, // 直接访问不需要 FieldInfo
+                    obj => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testColorArray,
+                    (obj, val) => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testColorArray = (UnityEngine.Color[])val
+                );
+
+                // 字段: testQuaternionArray
+                var aliases_testQuaternionArray_2 = new string[0];
+                entries[" Test Quaternion Array "] = new SaveEntry(
+                    " Test Quaternion Array ",
+                    aliases_testQuaternionArray_2,
+                    typeof(SaveFramework.Test.SaveLoadIntegrationTest),
+                    "testQuaternionArray",
+                    typeof(UnityEngine.Quaternion[]),
+                    null, // 直接访问不需要 FieldInfo
+                    obj => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testQuaternionArray,
+                    (obj, val) => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testQuaternionArray = (UnityEngine.Quaternion[])val
+                );
+
+                // 字段: testVector3
+                var aliases_testVector3_3 = new string[0];
+                entries[" Test Single Vector3 "] = new SaveEntry(
+                    " Test Single Vector3 ",
+                    aliases_testVector3_3,
+                    typeof(SaveFramework.Test.SaveLoadIntegrationTest),
+                    "testVector3",
+                    typeof(UnityEngine.Vector3),
+                    null, // 直接访问不需要 FieldInfo
+                    obj => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testVector3,
+                    (obj, val) => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testVector3 = (UnityEngine.Vector3)val
+                );
+
+                // 字段: testColor
+                var aliases_testColor_4 = new string[0];
+                entries[" Test Single Color "] = new SaveEntry(
+                    " Test Single Color ",
+                    aliases_testColor_4,
+                    typeof(SaveFramework.Test.SaveLoadIntegrationTest),
+                    "testColor",
+                    typeof(UnityEngine.Color),
+                    null, // 直接访问不需要 FieldInfo
+                    obj => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testColor,
+                    (obj, val) => ((SaveFramework.Test.SaveLoadIntegrationTest)obj).testColor = (UnityEngine.Color)val
                 );
 
                 return;

@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using SaveFramework.Runtime.Attributes;
 using UnityEditor;
 using UnityEngine;
 using SaveFramework.Runtime.Core;
+using SaveFramework.Runtime.Attributes;
 
 namespace SaveFramework.Editor
 {
@@ -142,10 +144,7 @@ namespace SaveFramework.Editor
             foreach (var field in fields)
             {
                 var saveAttr = field.GetCustomAttribute<SaveAttribute>();
-                if (saveAttr == null)
-                {
-                    saveAttr = field.GetCustomAttribute<SaveFieldAttribute>();
-                }
+             
 
                 if (saveAttr != null && Converters.IsSupported(field.FieldType))
                 {
@@ -218,7 +217,7 @@ namespace SaveFramework.Editor
                 for (int i = 0; i < fields.Count; i++)
                 {
                     var field = fields[i];
-                    var saveAttr = field.GetCustomAttribute<SaveAttribute>() ?? field.GetCustomAttribute<SaveFieldAttribute>();
+                    var saveAttr = field.GetCustomAttribute<SaveAttribute>();
                     var key = saveAttr.EffectiveKey(field.Name) ?? field.Name;
                     var aliases = saveAttr.Aliases ?? Array.Empty<string>();
 

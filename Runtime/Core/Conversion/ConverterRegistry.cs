@@ -33,15 +33,15 @@ namespace SaveFramework.Runtime.Core.Conversion
             try
             {
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                
+
                 foreach (var assembly in assemblies)
                 {
                     try
                     {
                         var converterTypes = assembly.GetTypes()
-                            .Where(type => type.GetCustomAttribute<AutoRegisterConverterAttribute>() != null)
-                            .Where(type => typeof(IValueConverter).IsAssignableFrom(type))
-                            .Where(type => !type.IsAbstract && !type.IsInterface);
+                                                     .Where(type => type.GetCustomAttribute<AutoRegisterConverterAttribute>() != null)
+                                                     .Where(type => typeof(IValueConverter).IsAssignableFrom(type))
+                                                     .Where(type => !type.IsAbstract && !type.IsInterface);
 
                         foreach (var converterType in converterTypes)
                         {
@@ -96,7 +96,7 @@ namespace SaveFramework.Runtime.Core.Conversion
         }
 
         /// <summary>
-        /// Check if a converter exists for the specified type
+        /// 检查是否存在指定类型的转换器
         /// </summary>
         public static bool HasConverter(Type type)
         {
@@ -105,7 +105,7 @@ namespace SaveFramework.Runtime.Core.Conversion
         }
 
         /// <summary>
-        /// Get all registered converter types
+        /// 获取所有注册的转换器类型
         /// </summary>
         public static Type[] GetSupportedTypes()
         {
@@ -114,12 +114,31 @@ namespace SaveFramework.Runtime.Core.Conversion
         }
 
         /// <summary>
-        /// Clear all registered converters (used for testing)
+        ///清除所有已注册的转换器（用于测试）
         /// </summary>
         public static void ClearConverters()
         {
             converters.Clear();
             isInitialized = false;
+        }
+
+        public static bool IsSupported(Type type)
+        {
+            if (type == null) return false;
+
+            if (type.IsPrimitive || type == typeof(string) || type.IsEnum)
+                return true;
+
+            if (HasConverter(type))
+                return true;
+
+            if (type.IsArray)
+                return IsSupported(type.GetElementType());
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+                return IsSupported(type.GetGenericArguments()[0]);
+
+            return false;
         }
 
         private static void EnsureInitialized()

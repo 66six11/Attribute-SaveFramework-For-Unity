@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace SaveFramework.Test
 {
     /// <summary>
-    /// Demonstrates the improvements of the new modular converter system
+    /// 演示新型模块化转换器系统的改进
     /// </summary>
     public class ConverterSystemDemo : MonoBehaviour
     {

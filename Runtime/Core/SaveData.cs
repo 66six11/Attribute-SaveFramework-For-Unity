@@ -60,31 +60,31 @@ namespace SaveFramework.Runtime.Core
         //     }
         // }
 
-        /// <summary>
-        /// 获取给定键的值，默认值可选 (Type-safe generic version)
-        /// </summary>
-        public T GetValue<T>(string key, T defaultValue = default(T))
-        {
-            if (typeof(T) == typeof(System.Type))
-                throw new InvalidOperationException("SaveFramework: 误用 GetValue<T> —— 推断到 T == System.Type。请改用非泛型重载 GetValue(key, targetType: typeof(YourType))。");
-
-            if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
-                return defaultValue;
-
-            try
-            {
-                if (value is T directValue)
-                    return directValue;
-                
-                // 尝试使用转换器系统进行转换
-                return (T)Converters.FromJsonValue(value, typeof(T));
-            }
-            catch
-            {
-                Debug.LogWarning($"SaveFramework: 转换失败 key '{key}' 到类型 {typeof(T).Name}");
-                return defaultValue;
-            }
-        }
+        // /// <summary>
+        // /// 获取给定键的值，默认值可选 (Type-safe generic version)
+        // /// </summary>
+        // public T GetValue<T>(string key, T defaultValue = default(T))
+        // {
+        //     if (typeof(T) == typeof(System.Type))
+        //         throw new InvalidOperationException("SaveFramework: 误用 GetValue<T> —— 推断到 T == System.Type。请改用非泛型重载 GetValue(key, targetType: typeof(YourType))。");
+        //
+        //     if (string.IsNullOrEmpty(key) || !data.TryGetValue(key, out var value))
+        //         return defaultValue;
+        //
+        //     try
+        //     {
+        //         if (value is T directValue)
+        //             return directValue;
+        //         
+        //         // 尝试使用转换器系统进行转换
+        //         return (T)Converters.FromJsonValue(value, typeof(T));
+        //     }
+        //     catch
+        //     {
+        //         Debug.LogWarning($"SaveFramework: 转换失败 key '{key}' 到类型 {typeof(T).Name}");
+        //         return defaultValue;
+        //     }
+        // }
 
         /// <summary>
         /// 获取给定键的值作为对象

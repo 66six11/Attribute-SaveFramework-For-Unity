@@ -6,7 +6,7 @@ using SaveFramework.Runtime.Core.Conversion.BuiltIn;
 namespace SaveFramework.Test
 {
     /// <summary>
-    /// Simple test component to verify the converter registry system works correctly
+    /// 用于验证转换器注册表系统正常工作的简单测试组件
     /// </summary>
     public class ConverterRegistryTest : MonoBehaviour
     {

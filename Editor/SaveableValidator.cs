@@ -3,256 +3,99 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SaveFramework.Runtime.Core.Attributes;
-using SaveFramework.Runtime.Core.Conversion;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
+using SaveFramework.Runtime.Core.Conversion;
 
 namespace SaveFramework.Editor
 {
-    /// <summary>
-    /// Validation system for SaveFramework saveable types
-    /// </summary>
-    public static class SaveableValidator
+    // 这个类不直接引用 SaveFieldAttribute 类型，避免命名空间不一致导致的编译问题
+    public class SaveableValidator : IPreprocessBuildWithReport
     {
-        [MenuItem("Tools/SaveFramework/Validate All Saveable Types")]
-        public static void ValidateAllSaveableTypes()
-        {
-            var issues = new List<ValidationIssue>();
-            
-            // Initialize converter registry
-            ConverterRegistry.Initialize();
-            
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assembly in assemblies)
-            {
-                try
-                {
-                    var types = assembly.GetTypes()
-                        .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t))
-                        .Where(HasSaveableFields);
-                    
-                    foreach (var type in types)
-                    {
-                        ValidateType(type, issues);
-                    }
-                }
-                catch (ReflectionTypeLoadException)
-                {
-                    // Skip assemblies that can't be loaded
-                }
-            }
-            
-            DisplayValidationResults(issues);
-        }
+        public int callbackOrder { get { return 0; } }
 
-        [MenuItem("Tools/SaveFramework/List Supported Types")]
-        public static void ListSupportedTypes()
-        {
-            ConverterRegistry.Initialize();
-            var supportedTypes = ConverterRegistry.GetSupportedTypes();
-            
-            var message = "SaveFramework Supported Types:\n\n";
-            message += "Primitive Types:\n";
-            message += "- bool, byte, sbyte, short, ushort, int, uint, long, ulong\n";
-            message += "- float, double, decimal, char, string\n";
-            message += "- Enums\n\n";
-            
-            message += "Custom Converters:\n";
-            foreach (var type in supportedTypes.OrderBy(t => t.Name))
-            {
-                message += $"- {type.Name}\n";
-            }
-            
-            message += "\nNote: Arrays and Lists of supported types are also supported.";
-            
-            EditorUtility.DisplayDialog("SaveFramework Supported Types", message, "OK");
-        }
+        private const string TargetAttributeSimpleName = "SaveFieldAttribute";
 
-        private static bool HasSaveableFields(Type type)
+        [MenuItem("Tools/SaveFramework/Validate Save Fields")]
+        public static void ValidateMenu()
         {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            return fields.Any(f => f.GetCustomAttribute<SaveAttribute>() != null || 
-                                  f.GetCustomAttribute<SaveFieldAttribute>() != null);
-        }
-
-        private static void ValidateType(Type type, List<ValidationIssue> issues)
-        {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            
-            foreach (var field in fields)
-            {
-                var saveAttr = field.GetCustomAttribute<SaveAttribute>();
-                var saveFieldAttr = field.GetCustomAttribute<SaveFieldAttribute>();
-                
-                if (saveAttr == null && saveFieldAttr == null)
-                    continue;
-                
-                if (!IsTypeSupported(field.FieldType))
-                {
-                    issues.Add(new ValidationIssue
-                    {
-                        Severity = ValidationSeverity.Error,
-                        Type = type,
-                        FieldName = field.Name,
-                        FieldType = field.FieldType,
-                        Message = $"Field '{field.Name}' in {type.Name} has unsupported type '{field.FieldType.Name}'"
-                    });
-                }
-                else if (IsWarningType(field.FieldType))
-                {
-                    issues.Add(new ValidationIssue
-                    {
-                        Severity = ValidationSeverity.Warning,
-                        Type = type,
-                        FieldName = field.Name,
-                        FieldType = field.FieldType,
-                        Message = $"Field '{field.Name}' in {type.Name} uses type '{field.FieldType.Name}' which may have serialization limitations"
-                    });
-                }
-            }
-        }
-
-        private static bool IsTypeSupported(Type type)
-        {
-            // Check primitive types
-            if (type.IsPrimitive || type == typeof(string) || type.IsEnum)
-                return true;
-            
-            // Check if there's a registered converter
-            if (ConverterRegistry.HasConverter(type))
-                return true;
-            
-            // Check arrays
-            if (type.IsArray)
-                return IsTypeSupported(type.GetElementType());
-            
-            // Check generic Lists
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-                return IsTypeSupported(type.GetGenericArguments()[0]);
-            
-            return false;
-        }
-
-        private static bool IsWarningType(Type type)
-        {
-            // Types that work but may have limitations
-            return type == typeof(decimal) || // May lose precision in JSON
-                   (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>)); // Not supported by default
-        }
-
-        private static void DisplayValidationResults(List<ValidationIssue> issues)
-        {
+            var issues = ValidateAll();
             if (issues.Count == 0)
             {
-                EditorUtility.DisplayDialog("Validation Complete", "No issues found! All saveable fields use supported types.", "OK");
-                return;
+                Debug.Log("SaveFramework: 所有带 [SaveField] 的字段/属性类型均受支持。");
             }
-            
-            var errors = issues.Where(i => i.Severity == ValidationSeverity.Error).ToList();
-            var warnings = issues.Where(i => i.Severity == ValidationSeverity.Warning).ToList();
-            
-            var message = "";
-            
-            if (errors.Count > 0)
+            else
             {
-                message += $"ERRORS ({errors.Count}):\n";
-                foreach (var error in errors.Take(10)) // Limit to first 10
-                {
-                    message += $"• {error.Message}\n";
-                }
-                if (errors.Count > 10)
-                    message += $"• ... and {errors.Count - 10} more errors\n";
-                message += "\n";
-            }
-            
-            if (warnings.Count > 0)
-            {
-                message += $"WARNINGS ({warnings.Count}):\n";
-                foreach (var warning in warnings.Take(5)) // Limit to first 5
-                {
-                    message += $"• {warning.Message}\n";
-                }
-                if (warnings.Count > 5)
-                    message += $"• ... and {warnings.Count - 5} more warnings\n";
-            }
-            
-            var title = errors.Count > 0 ? "Validation Failed" : "Validation Warnings";
-            EditorUtility.DisplayDialog(title, message, "OK");
-            
-            // Log detailed issues to console
-            foreach (var issue in issues)
-            {
-                if (issue.Severity == ValidationSeverity.Error)
-                    Debug.LogError($"[SaveFramework] {issue.Message}");
-                else
-                    Debug.LogWarning($"[SaveFramework] {issue.Message}");
+                foreach (var i in issues) Debug.LogError(i);
             }
         }
-        
-        /// <summary>
-        /// Build processor to validate saveable types before build
-        /// </summary>
-        [UnityEditor.Build.IPreprocessBuildWithReport]
-        public class SaveFrameworkBuildProcessor : UnityEditor.Build.IPreprocessBuildWithReport
+
+        public void OnPreprocessBuild(BuildReport report)
         {
-            public int callbackOrder => 0;
-
-            public void OnPreprocessBuild(UnityEditor.Build.Reporting.BuildReport report)
+            var issues = ValidateAll();
+            if (issues.Count > 0)
             {
-                var issues = new List<ValidationIssue>();
-                ConverterRegistry.Initialize();
-                
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (var assembly in assemblies)
-                {
-                    try
-                    {
-                        var types = assembly.GetTypes()
-                            .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t))
-                            .Where(HasSaveableFields);
-                        
-                        foreach (var type in types)
-                        {
-                            ValidateType(type, issues);
-                        }
-                    }
-                    catch (ReflectionTypeLoadException)
-                    {
-                        // Skip assemblies that can't be loaded
-                    }
-                }
-                
-                var errors = issues.Where(i => i.Severity == ValidationSeverity.Error).ToList();
-                if (errors.Count > 0)
-                {
-                    var errorMessage = $"Build failed: SaveFramework found {errors.Count} unsupported field types:\n";
-                    foreach (var error in errors.Take(5))
-                    {
-                        errorMessage += $"• {error.Message}\n";
-                    }
-                    if (errors.Count > 5)
-                        errorMessage += $"• ... and {errors.Count - 5} more errors";
-                    
-                    throw new UnityEditor.Build.BuildFailedException(errorMessage);
-                }
+                var msg = "SaveFramework: 存在不支持的保存字段/属性类型，阻止打包：\n" + string.Join("\n", issues);
+                throw new BuildFailedException(msg);
             }
         }
-    }
 
-    public class ValidationIssue
-    {
-        public ValidationSeverity Severity;
-        public Type Type;
-        public string FieldName;
-        public Type FieldType;
-        public string Message;
-    }
+        private static List<string> ValidateAll()
+        {
+            var issues = new List<string>();
 
-    public enum ValidationSeverity
-    {
-        Warning,
-        Error
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type[] types;
+                try { types = asm.GetTypes(); }
+                catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t != null).ToArray(); }
+
+                foreach (var t in types)
+                {
+                    if (t == null || t.IsGenericTypeDefinition) continue;
+
+                    // 字段
+                    var fields = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                    foreach (var f in fields)
+                    {
+                        if (!HasSaveFieldAttribute(f)) continue;
+                        var ft = f.FieldType;
+                        if (!ConverterRegistry.IsSupported(ft))
+                            issues.Add(string.Format("{0}.{1} : {2}", t.FullName, f.Name, ft.FullName));
+                    }
+
+                    // 属性（只检查可读可写、非索引器）
+                    var props = t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                    foreach (var p in props)
+                    {
+                        if (!HasSaveFieldAttribute(p)) continue;
+                        if (!p.CanRead || !p.CanWrite) continue;
+                        if (p.GetIndexParameters().Length > 0) continue;
+
+                        var pt = p.PropertyType;
+                        if (!ConverterRegistry.IsSupported(pt))
+                            issues.Add(string.Format("{0}.{1} : {2}", t.FullName, p.Name, pt.FullName));
+                    }
+                }
+            }
+
+            return issues;
+        }
+
+        private static bool HasSaveFieldAttribute(MemberInfo member)
+        {
+            // 按“类型名等于 SaveFieldAttribute”来判断，忽略命名空间差异
+            var attrs = member.GetCustomAttributes(inherit: true);
+            foreach (var a in attrs)
+            {
+                var at = a.GetType();
+                if (string.Equals(at.Name, TargetAttributeSimpleName, StringComparison.Ordinal))
+                    return true;
+            }
+            return false;
+        }
     }
 }
 #endif

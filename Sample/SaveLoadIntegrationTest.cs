@@ -1,16 +1,16 @@
 using UnityEngine;
 using SaveFramework.Runtime.Core;
 using SaveFramework.Components;
-using SaveFramework.Runtime.Core.Attributes;
+using SaveFramework.Runtime.Attributes;
 
 namespace SaveFramework.Test
 {
     /// <summary>
-    /// Integration test to verify the complete save/load workflow with the new converter system
+    /// 集成测试，以验证使用新转换器系统的完整保存/加载工作流程
     /// </summary>
     public class SaveLoadIntegrationTest : MonoBehaviour
     {
-        [SaveFramework.Runtime.Core.Attributes.SaveField(" Test Vector3 Array ")] 
+        [Save(" Test Vector3 Array ")] 
         public Vector3[] testVector3Array = new Vector3[] 
         { 
             new Vector3(1.1f, 2.2f, 3.3f), 
@@ -19,7 +19,7 @@ namespace SaveFramework.Test
             Vector3.one
         };
         
-        [SaveFramework.Runtime.Core.Attributes.SaveField(" Test Color Array ")] 
+        [Save(" Test Color Array ")] 
         public Color[] testColorArray = new Color[] 
         { 
             Color.red, 
@@ -28,7 +28,7 @@ namespace SaveFramework.Test
             Color.clear
         };
         
-        [SaveFramework.Runtime.Core.Attributes.SaveField(" Test Quaternion Array ")] 
+        [Save(" Test Quaternion Array ")] 
         public Quaternion[] testQuaternionArray = new Quaternion[] 
         { 
             Quaternion.identity,
@@ -36,10 +36,10 @@ namespace SaveFramework.Test
             Quaternion.Euler(45, 90, 180)
         };
         
-        [SaveFramework.Runtime.Core.Attributes.SaveField(" Test Single Vector3 ")] 
+        [Save(" Test Single Vector3 ")] 
         public Vector3 testVector3 = new Vector3(7.7f, 8.8f, 9.9f);
         
-        [SaveFramework.Runtime.Core.Attributes.SaveField(" Test Single Color ")] 
+        [Save(" Test Single Color ")] 
         public Color testColor = new Color(0.25f, 0.5f, 0.75f, 1.0f);
 
         private void Start()

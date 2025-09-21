@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SaveFramework.Components;
+using SaveFramework.Runtime.Attributes;
 using UnityEngine;
 
 namespace SaveFramework.Runtime.Core
@@ -298,16 +299,7 @@ namespace SaveFramework.Runtime.Core
             foreach (var field in fields)
             {
                 var saveAttr = field.GetCustomAttributes(typeof(SaveAttribute), true).FirstOrDefault() as SaveAttribute;
-                if (saveAttr == null)
-                {
-                    // Also check for SaveFieldAttribute
-                    var saveFieldAttr = field.GetCustomAttributes(typeof(SaveFramework.Runtime.Core.Attributes.SaveFieldAttribute), true).FirstOrDefault() as SaveFramework.Runtime.Core.Attributes.SaveFieldAttribute;
-                    if (saveFieldAttr != null)
-                    {
-                        // Create a compatible SaveAttribute from SaveFieldAttribute
-                        saveAttr = new SaveAttribute(saveFieldAttr.Key, saveFieldAttr.Aliases);
-                    }
-                }
+               
 
                 if (saveAttr == null)
                     continue;

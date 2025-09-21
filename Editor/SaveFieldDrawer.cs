@@ -1,17 +1,17 @@
 #if UNITY_EDITOR
-using SaveFramework.Runtime.Core.Attributes;
+using SaveFramework.Runtime.Attributes;
 using SaveFramework.Runtime.Core.Conversion;
 using UnityEditor;
 using UnityEngine;
 
 namespace SaveFramework.Editor
 {
-    [CustomPropertyDrawer(typeof(SaveFieldAttribute))]
+    [CustomPropertyDrawer(typeof(SaveAttribute))]
     public class SaveFieldDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var saveFieldAttr = attribute as SaveFieldAttribute;
+            var saveFieldAttr = attribute as SaveAttribute;
             
             // Check if the field type is supported
             var fieldType = fieldInfo.FieldType;
@@ -27,7 +27,7 @@ namespace SaveFramework.Editor
                 
                 // Show warning message
                 var warningRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, EditorGUIUtility.singleLineHeight);
-                EditorGUI.HelpBox(warningRect, $"Type '{fieldType.Name}' is not supported by SaveFramework converters!", MessageType.Warning);
+                EditorGUI.HelpBox(warningRect, $"类型 '{fieldType.Name}' SaveFramework 转换器不支持！, 请使用自定义转换器。", MessageType.Warning);
                 
                 GUI.color = originalColor;
             }
