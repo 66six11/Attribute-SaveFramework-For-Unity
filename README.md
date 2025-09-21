@@ -1,5 +1,17 @@
 # SaveFramework 使用说明
 - 测试中~~
+  
+未测试项：
+- 程序集分包存档功能验证
+- 场景切换存档
+  
+···
+
+未开发：
+- 指定键值存入/加载
+- 键值分文件目录
+  
+···
 
 ## 概述
 
@@ -20,6 +32,7 @@ SaveFramework 是一个专为 Unity 设计的轻量级、易用的存档系统�
 ### 1. 安装框架
 
 将 SaveFramework 文件夹放入您的 Unity 项目的 Assets 目录中。
+依赖 com.unity.nuget.newtonsoft-json
 
 ### 2. 基础设置
 
