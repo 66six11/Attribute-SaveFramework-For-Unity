@@ -271,6 +271,9 @@ namespace SaveFramework.Runtime.Core.Conversion.BuiltIn
 }
 ```
 
+然后执行操作：
+Tools → Save Framework → 预生成转换器注册表
+
 #### 带转换器的字段标记
 ```csharp
 public class GameSession : MonoBehaviour
