@@ -11,4 +11,4 @@ This documentation is automatically generated from XML comments in the source co
 - [SaveFramework.Runtime.Core.Conversion.BuiltIn](SaveFramework-Runtime-Core-Conversion-BuiltIn.md) - 1 classes
 - [SaveFramework.Sample](SaveFramework-Sample.md) - 2 classes
 
-*Last updated: 2025-09-22 09:11:16 UTC*
+*Last updated: 2025-09-22 09:15:39 UTC*
