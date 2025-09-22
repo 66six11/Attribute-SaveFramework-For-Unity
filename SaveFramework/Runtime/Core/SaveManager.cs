@@ -145,7 +145,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Check if a save slot exists
+        /// 检查是否存在保存槽
         /// </summary>
         public bool HasSave(string slotName)
         {
