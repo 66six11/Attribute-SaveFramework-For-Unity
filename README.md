@@ -246,6 +246,9 @@ public class CloudSaveBackend : ISaveBackend
 
 对于框架不原生支持的类型，可以实现自定义转换器：
 
+> [!Tip]
+> 自定义的类型转换需要放入SaveFramework/Runtime/Core/Conversion/BuiltIn目录下
+
 ```csharp
 using Newtonsoft.Json.Linq;
 using UnityEngine;
