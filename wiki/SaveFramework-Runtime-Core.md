@@ -2,37 +2,6 @@
 
 [← Back to Home](Home.md)
 
-## Table of Contents
-
-- [Converters](#converters)
-  - [FromJsonValue (Method)](#converters-fromjsonvalue-method)
-  - [IsSupported (Method)](#converters-issupported-method)
-  - [ToJsonValue (Method)](#converters-tojsonvalue-method)
-- [FileBackend](#filebackend)
-- [ISaveBackend](#isavebackend)
-  - [DeleteSave (Method)](#isavebackend-deletesave-method)
-  - [GetSaveSlots (Method)](#isavebackend-getsaveslots-method)
-  - [HasSave (Method)](#isavebackend-hassave-method)
-  - [Load (Method)](#isavebackend-load-method)
-  - [Save (Method)](#isavebackend-save-method)
-- [SaveData](#savedata)
-  - [Clear (Method)](#savedata-clear-method)
-  - [GetValue (Method)](#savedata-getvalue-method)
-  - [HasKey (Method)](#savedata-haskey-method)
-  - [RemoveKey (Method)](#savedata-removekey-method)
-  - [SetValue (Method)](#savedata-setvalue-method)
-- [SaveEntry](#saveentry)
-  - [GetValue (Method)](#saveentry-getvalue-method)
-  - [MatchesKey (Method)](#saveentry-matcheskey-method)
-  - [SetValue (Method)](#saveentry-setvalue-method)
-- [SaveManager](#savemanager)
-  - [HasSave (Method)](#savemanager-hassave-method)
-  - [Load (Method)](#savemanager-load-method)
-  - [Load (Method)](#savemanager-load-method)
-  - [Save (Method)](#savemanager-save-method)
-  - [SetBackend (Method)](#savemanager-setbackend-method)
-  - ... and 3 more
-
 ## Converters
 
 **Description:** Facade for conversion system - routes to modular converter registry
@@ -268,7 +237,7 @@ void Load(string slotName)
 ```
 
 
-**Description:** 从指定的插槽加载数据并应用于所有 SaveId 组件
+**Description:** 从指定的插槽加载数据并应用于所有 [SaveId](SaveFramework-Components.md#saveid) 组件
 
 #### Load (Method) {#savemanager-load-method}
 ```csharp
@@ -279,7 +248,7 @@ void Load(
 ```
 
 
-**Description:** 加载指定 SaveId 组件的保存数据
+**Description:** 加载指定 [SaveId](SaveFramework-Components.md#saveid) 组件的保存数据
 
 #### Save (Method) {#savemanager-save-method}
 ```csharp
@@ -287,7 +256,7 @@ void Save(string slotName)
 ```
 
 
-**Description:** 将所有 SaveId 组件保存到指定的插槽中
+**Description:** 将所有 [SaveId](SaveFramework-Components.md#saveid) 组件保存到指定的插槽中
 
 #### SetBackend (Method) {#savemanager-setbackend-method}
 ```csharp
@@ -299,4 +268,4 @@ void SetBackend(ISaveBackend customBackend)
 
 ---
 
-*Last updated: 2025-09-22 09:28:00 UTC*
+*Last updated: 2025-09-22 09:29:54 UTC*

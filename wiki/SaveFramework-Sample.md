@@ -2,16 +2,6 @@
 
 [← Back to Home](Home.md)
 
-## Table of Contents
-
-- [GameDifficulty](#gamedifficulty)
-- [PlayerStats](#playerstats)
-  - [AddDemoItems (Method)](#playerstats-adddemoitems-method)
-  - [LevelUp (Method)](#playerstats-levelup-method)
-  - [Load (Method)](#playerstats-load-method)
-  - [ResetStats (Method)](#playerstats-resetstats-method)
-  - [Save (Method)](#playerstats-save-method)
-
 ## GameDifficulty
 
 **Description:** Example enum for difficulty settings
@@ -66,4 +56,4 @@ void Save()
 
 ---
 
-*Last updated: 2025-09-22 09:28:00 UTC*
+*Last updated: 2025-09-22 09:29:54 UTC*
