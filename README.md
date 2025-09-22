@@ -4,7 +4,6 @@
 未测试项：
 - 程序集分包存档功能验证
 - 场景切换存档
-- 别名
   
 ···
 
@@ -65,7 +64,7 @@ public class PlayerStats : MonoBehaviour
 {
     [Save("health")] public int Health = 100;
     [Save("mana")] public int Mana = 50;
-    [Save("level")] public int Level = 1;
+    [Save("level"，"level2")] public int Level = 1;键别称，可用于数据之前存档的数据兼容level2键值
     [Save] public Vector3 Position;  // 使用字段名作为键
 }
 ```
