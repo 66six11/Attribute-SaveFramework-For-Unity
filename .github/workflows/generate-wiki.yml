@@ -2,37 +2,66 @@ name: Generate Wiki from XML Comments
 
 on:
   push:
-    branches: [ main ]
-    paths: 
+    branches: [main]
+    paths:
       - 'SaveFramework/**/*.cs'
   workflow_dispatch:
-  
+
 jobs:
   generate-wiki:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-        
-    - name: Generate Wiki Documentation
-      run: |
-        chmod +x .github/scripts/generate-wiki.sh
-        ./.github/scripts/generate-wiki.sh
-        
-    - name: Commit and push wiki changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add wiki/
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "Auto-update wiki from XML documentation [skip ci]"
-          git push
-        fi
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Generate Wiki Documentation
+        run: |
+          chmod +x .github/scripts/generate-wiki.sh
+          ./.github/scripts/generate-wiki.sh
+
+      - name: Update GitHub Wiki
+        run: |
+          # Configure git
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+          # Try to clone the wiki repository
+          echo "Attempting to clone GitHub Wiki repository..."
+          WIKI_URL="https://github.com/66six11/Attribute-SaveFramework-For-Unity.wiki.git"
+          if git clone "$WIKI_URL" wiki-repo 2>/dev/null; then
+            echo "Successfully cloned Wiki repository"
+
+            # Copy generated files to wiki repository
+            echo "Copying generated wiki files to Wiki repository..."
+            cp -f wiki/*.md wiki-repo/
+
+            # Check if there are changes and commit to wiki
+            cd wiki-repo
+            if git diff --quiet && git diff --staged --quiet; then
+              echo "No changes to commit to Wiki"
+            else
+              echo "Committing changes to Wiki..."
+              git add .
+              git commit -m "Auto-update wiki from XML documentation [skip ci]"
+              git push origin main
+              echo "Wiki updated successfully!"
+            fi
+          else
+            echo "Wiki repository not found or not accessible. Falling back to main repository..."
+
+            # Fallback: commit to main repository
+            git add wiki/
+            if git diff --staged --quiet; then
+              echo "No changes to commit to main repository"
+            else
+              git commit -m "Auto-update wiki from XML documentation [skip ci]"
+              git push
+              echo "Wiki files updated in main repository"
+            fi
+          fi
