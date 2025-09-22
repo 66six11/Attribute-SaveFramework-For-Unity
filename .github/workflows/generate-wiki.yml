@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -65,3 +66,4 @@ jobs:
               echo "Wiki files updated in main repository"
             fi
           fi
+
