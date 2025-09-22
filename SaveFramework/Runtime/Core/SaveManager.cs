@@ -101,7 +101,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Load data from the specified slot and apply to all SaveId components
+        /// 从指定的插槽加载数据并应用于所有 SaveId 组件
         /// </summary>
         public void Load(string slotName)
         {
