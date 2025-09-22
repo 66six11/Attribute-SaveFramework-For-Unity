@@ -52,6 +52,8 @@ using System.Text.RegularExpressions;
 public class WikiGenerator
 {
     private static readonly Regex ClassPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|abstract|sealed)?\s*(?:class|interface|struct|enum)\s+([A-Za-z_][A-Za-z0-9_]*)", RegexOptions.Multiline);
+    private static readonly Regex MethodPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|virtual|override|abstract)?\s*(?:\w+(?:<[^>]*>)?(?:\[\])?\s+)([A-Za-z_][A-Za-z0-9_]*)\s*\(", RegexOptions.Multiline);
+    private static readonly Regex PropertyPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|virtual|override|abstract)?\s*(?:\w+(?:<[^>]*>)?(?:\[\])?\s+)([A-Za-z_][A-Za-z0-9_]*)\s*{\s*(?:get|set)", RegexOptions.Multiline);
     private static readonly Regex NamespacePattern = new Regex(@"^\s*namespace\s+([A-Za-z_][A-Za-z0-9_.]*)", RegexOptions.Multiline);
     private static readonly Regex XmlDocPattern = new Regex(@"^\s*///\s*(.*?)$", RegexOptions.Multiline);
     private static readonly Regex SummaryPattern = new Regex(@"<summary>\s*(.*?)\s*</summary>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
@@ -99,7 +101,7 @@ public class WikiGenerator
     {
         var content = File.ReadAllText(filePath);
         var namespaceName = ExtractNamespace(content);
-        var classes = ExtractClasses(content);
+        var classes = ExtractClassesAndMembers(content);
 
         if (!string.IsNullOrEmpty(namespaceName) && classes.Any())
         {
@@ -117,7 +119,7 @@ public class WikiGenerator
         return match.Success ? match.Groups[1].Value : "Global";
     }
 
-    private static List<ClassDocumentation> ExtractClasses(string content)
+    private static List<ClassDocumentation> ExtractClassesAndMembers(string content)
     {
         var classes = new List<ClassDocumentation>();
         var lines = content.Split('\n');
@@ -128,11 +130,11 @@ public class WikiGenerator
             if (classMatch.Success)
             {
                 var className = classMatch.Groups[1].Value;
-                var xmlDoc = ExtractXmlDocForClass(lines, i);
+                var xmlDoc = ExtractXmlDocForItem(lines, i);
                 
                 if (!string.IsNullOrEmpty(xmlDoc))
                 {
-                    classes.Add(new ClassDocumentation
+                    var classDoc = new ClassDocumentation
                     {
                         Name = className,
                         XmlDocumentation = xmlDoc,
@@ -140,8 +142,60 @@ public class WikiGenerator
                         Parameters = ExtractParameters(xmlDoc),
                         Returns = ExtractReturns(xmlDoc),
                         Remarks = ExtractRemarks(xmlDoc),
-                        Example = ExtractExample(xmlDoc)
-                    });
+                        Example = ExtractExample(xmlDoc),
+                        Methods = new List<MethodDocumentation>()
+                    };
+
+                    // Extract methods for this class
+                    var methodsStartIndex = i + 1;
+                    var classEndIndex = FindClassEndIndex(lines, i);
+                    
+                    for (int j = methodsStartIndex; j < classEndIndex && j < lines.Length; j++)
+                    {
+                        var methodMatch = MethodPattern.Match(lines[j]);
+                        var propMatch = PropertyPattern.Match(lines[j]);
+                        
+                        if (methodMatch.Success)
+                        {
+                            var methodName = methodMatch.Groups[1].Value;
+                            var methodXmlDoc = ExtractXmlDocForItem(lines, j);
+                            
+                            if (!string.IsNullOrEmpty(methodXmlDoc))
+                            {
+                                classDoc.Methods.Add(new MethodDocumentation
+                                {
+                                    Name = methodName,
+                                    Type = "Method",
+                                    Summary = ExtractSummary(methodXmlDoc),
+                                    Parameters = ExtractParameters(methodXmlDoc),
+                                    Returns = ExtractReturns(methodXmlDoc),
+                                    Remarks = ExtractRemarks(methodXmlDoc),
+                                    Example = ExtractExample(methodXmlDoc)
+                                });
+                            }
+                        }
+                        else if (propMatch.Success)
+                        {
+                            var propName = propMatch.Groups[1].Value;
+                            var propXmlDoc = ExtractXmlDocForItem(lines, j);
+                            
+                            if (!string.IsNullOrEmpty(propXmlDoc))
+                            {
+                                classDoc.Methods.Add(new MethodDocumentation
+                                {
+                                    Name = propName,
+                                    Type = "Property",
+                                    Summary = ExtractSummary(propXmlDoc),
+                                    Parameters = ExtractParameters(propXmlDoc),
+                                    Returns = ExtractReturns(propXmlDoc),
+                                    Remarks = ExtractRemarks(propXmlDoc),
+                                    Example = ExtractExample(propXmlDoc)
+                                });
+                            }
+                        }
+                    }
+
+                    classes.Add(classDoc);
                 }
             }
         }
@@ -149,12 +203,41 @@ public class WikiGenerator
         return classes;
     }
 
-    private static string ExtractXmlDocForClass(string[] lines, int classLineIndex)
+    private static int FindClassEndIndex(string[] lines, int classStartIndex)
+    {
+        int braceCount = 0;
+        bool foundOpenBrace = false;
+        
+        for (int i = classStartIndex; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            foreach (char c in line)
+            {
+                if (c == '{')
+                {
+                    braceCount++;
+                    foundOpenBrace = true;
+                }
+                else if (c == '}')
+                {
+                    braceCount--;
+                    if (foundOpenBrace && braceCount == 0)
+                    {
+                        return i;
+                    }
+                }
+            }
+        }
+        
+        return lines.Length;
+    }
+
+    private static string ExtractXmlDocForItem(string[] lines, int itemLineIndex)
     {
         var xmlLines = new List<string>();
         
         // Look backwards for XML documentation
-        for (int i = classLineIndex - 1; i >= 0; i--)
+        for (int i = itemLineIndex - 1; i >= 0; i--)
         {
             var line = lines[i].Trim();
             if (line.StartsWith("///"))
@@ -178,6 +261,8 @@ public class WikiGenerator
         if (match.Success)
         {
             var summary = match.Groups[1].Value.Trim();
+            // Remove any remaining parameter tags from the summary
+            summary = Regex.Replace(summary, @"<param[^>]*>.*?</param>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             // Clean up any remaining /// markers
             summary = Regex.Replace(summary, @"^\s*///\s*", "", RegexOptions.Multiline);
             return summary.Trim();
@@ -304,6 +389,55 @@ public class WikiGenerator
                 sb.AppendLine();
             }
 
+            // Add methods and properties
+            if (classDoc.Methods.Any())
+            {
+                sb.AppendLine("### Methods and Properties");
+                sb.AppendLine();
+
+                foreach (var method in classDoc.Methods.OrderBy(m => m.Type).ThenBy(m => m.Name))
+                {
+                    sb.AppendLine($"#### {method.Name} ({method.Type})");
+                    
+                    if (!string.IsNullOrEmpty(method.Summary))
+                    {
+                        sb.AppendLine($"{method.Summary}");
+                        sb.AppendLine();
+                    }
+
+                    if (method.Parameters.Any())
+                    {
+                        sb.AppendLine("**Parameters:**");
+                        foreach (var param in method.Parameters)
+                        {
+                            sb.AppendLine($"- `{param.Name}`: {param.Description}");
+                        }
+                        sb.AppendLine();
+                    }
+
+                    if (!string.IsNullOrEmpty(method.Returns))
+                    {
+                        sb.AppendLine($"**Returns:** {method.Returns}");
+                        sb.AppendLine();
+                    }
+
+                    if (!string.IsNullOrEmpty(method.Remarks))
+                    {
+                        sb.AppendLine($"**Remarks:** {method.Remarks}");
+                        sb.AppendLine();
+                    }
+
+                    if (!string.IsNullOrEmpty(method.Example))
+                    {
+                        sb.AppendLine("**Example:**");
+                        sb.AppendLine("```csharp");
+                        sb.AppendLine(method.Example);
+                        sb.AppendLine("```");
+                        sb.AppendLine();
+                    }
+                }
+            }
+
             sb.AppendLine("---");
             sb.AppendLine();
         }
@@ -318,6 +452,18 @@ public class ClassDocumentation
 {
     public string Name { get; set; }
     public string XmlDocumentation { get; set; }
+    public string Summary { get; set; }
+    public List<ParameterDoc> Parameters { get; set; } = new List<ParameterDoc>();
+    public string Returns { get; set; }
+    public string Remarks { get; set; }
+    public string Example { get; set; }
+    public List<MethodDocumentation> Methods { get; set; } = new List<MethodDocumentation>();
+}
+
+public class MethodDocumentation
+{
+    public string Name { get; set; }
+    public string Type { get; set; } // "Method" or "Property"
     public string Summary { get; set; }
     public List<ParameterDoc> Parameters { get; set; } = new List<ParameterDoc>();
     public string Returns { get; set; }
