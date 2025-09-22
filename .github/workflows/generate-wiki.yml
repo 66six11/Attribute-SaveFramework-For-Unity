@@ -34,5 +34,5 @@ jobs:
           echo "No changes to commit"
         else
           git commit -m "Auto-update wiki from XML documentation [skip ci]"
-          git push
+          git push https://github.com/66six11/Attribute-SaveFramework-For-Unity.wiki.git
         fi
