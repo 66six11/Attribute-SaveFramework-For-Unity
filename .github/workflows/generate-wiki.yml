@@ -1,0 +1,38 @@
+name: Generate Wiki from XML Comments
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'SaveFramework/**/*.cs'
+  workflow_dispatch:
+  
+jobs:
+  generate-wiki:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Generate Wiki Documentation
+      run: |
+        chmod +x .github/scripts/generate-wiki.sh
+        ./.github/scripts/generate-wiki.sh
+        
+    - name: Commit and push wiki changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add wiki/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Auto-update wiki from XML documentation [skip ci]"
+          git push
+        fi
