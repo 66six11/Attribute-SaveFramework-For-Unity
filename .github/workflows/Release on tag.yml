@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -33,14 +34,11 @@ jobs:
             rsync -av Generated/ "Assets/Plugins/SaveFramework/Generated/"
           fi
 
-      # 使用 action 生成 .unitypackage（要求文件具备 .meta）
+      # 生成 .unitypackage（要求文件具备 .meta）
       - name: Create .unitypackage
         uses: pCYSl5EDgo/create-unitypackage@v1
         with:
           package-path: Assets/Plugins/SaveFramework
-          # include-files: |  # 如需精确列举文件可启用
-          #   Assets/Plugins/SaveFramework/Runtime/...
-          #   Assets/Plugins/SaveFramework/Editor/...
           project-folder: .
 
       - name: Rename unitypackage with tag
@@ -50,7 +48,7 @@ jobs:
           FILE=$(ls -1 *.unitypackage | head -n 1)
           mv "$FILE" "SaveFramework-${{ github.ref_name }}.unitypackage"
 
-      # 额外打一个 UPM 结构的 zip，便于离线导入或镜像分发
+      # 打一个 UPM 结构的 zip（便于离线导入/镜像）
       - name: Create UPM zip
         shell: bash
         run: |
@@ -61,7 +59,11 @@ jobs:
           [ -d Runtime ] && dirs+=(Runtime)
           [ -d Editor ] && dirs+=(Editor)
           [ -d Sample ] && dirs+=(Sample)
-          zip -r "$ZIP" "${files[@]}" "${dirs[@]}" 2>/dev/null || true
+          if [ ${#dirs[@]} -eq 0 ]; then
+            echo "No UPM content dirs found, skipping zip"
+          else
+            zip -r "$ZIP" "${files[@]}" "${dirs[@]}" 2>/dev/null || true
+          fi
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
