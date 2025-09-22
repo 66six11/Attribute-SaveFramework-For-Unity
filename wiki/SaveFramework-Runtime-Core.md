@@ -119,8 +119,8 @@ Dictionary<string, object> Load(string slotName)
 ```csharp
 void Save(
     string slotName,
-    object> data,
-    bool reWrite
+    Dictionary<string, object> data,
+    bool reWrite = true
 )
 ```
 
@@ -129,8 +129,8 @@ void Save(
 
 **Parameters:**
 - `slotName` (`string`): 保存槽名称
-- `data` (`object>`): 要保存的数据
-- `reWrite` (`bool`): 完全覆盖或增量保存
+- `data` (`Dictionary<string, object>`): 要保存的数据
+- `reWrite`: 完全覆盖或增量保存
 
 ---
 
@@ -153,7 +153,7 @@ void Clear()
 object GetValue(
     string key,
     Type targetType,
-    object defaultValue
+    object defaultValue = null
 )
 ```
 
@@ -299,4 +299,4 @@ void SetBackend(ISaveBackend customBackend)
 
 ---
 
-*Last updated: 2025-09-22 09:15:39 UTC*
+*Last updated: 2025-09-22 09:17:25 UTC*

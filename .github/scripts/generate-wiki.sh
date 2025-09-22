@@ -329,25 +329,67 @@ public class WikiGenerator
         if (string.IsNullOrWhiteSpace(parametersString))
             return paramTypes;
             
-        var parameters = parametersString.Split(',');
+        // Handle complex parameter parsing for generic types
+        var parameters = SplitParameters(parametersString);
         foreach (var param in parameters)
         {
             var trimmedParam = param.Trim();
             if (string.IsNullOrEmpty(trimmedParam))
                 continue;
                 
-            var match = ParameterTypePattern.Match(trimmedParam);
-            if (match.Success)
+            // Find the last space to separate type from name
+            var lastSpaceIndex = trimmedParam.LastIndexOf(' ');
+            if (lastSpaceIndex > 0)
             {
+                var type = trimmedParam.Substring(0, lastSpaceIndex).Trim();
+                var name = trimmedParam.Substring(lastSpaceIndex + 1).Trim();
+                
+                // Clean up any default values
+                var equalIndex = name.IndexOf('=');
+                if (equalIndex >= 0)
+                {
+                    name = name.Substring(0, equalIndex).Trim();
+                }
+                
                 paramTypes.Add(new ParameterTypeInfo
                 {
-                    Type = match.Groups[1].Value.Trim(),
-                    Name = match.Groups[2].Value.Trim()
+                    Type = type,
+                    Name = name
                 });
             }
         }
         
         return paramTypes;
+    }
+    
+    private static List<string> SplitParameters(string parametersString)
+    {
+        var parameters = new List<string>();
+        var currentParam = new StringBuilder();
+        var angleDepth = 0;
+        
+        for (int i = 0; i < parametersString.Length; i++)
+        {
+            var c = parametersString[i];
+            
+            if (c == '<')
+                angleDepth++;
+            else if (c == '>')
+                angleDepth--;
+            else if (c == ',' && angleDepth == 0)
+            {
+                parameters.Add(currentParam.ToString());
+                currentParam.Clear();
+                continue;
+            }
+            
+            currentParam.Append(c);
+        }
+        
+        if (currentParam.Length > 0)
+            parameters.Add(currentParam.ToString());
+            
+        return parameters;
     }
 
     private static void GenerateWikiPages(Dictionary<string, List<ClassDocumentation>> documentation, string outputDir)
