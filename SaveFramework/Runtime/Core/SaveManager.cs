@@ -222,7 +222,7 @@ namespace SaveFramework.Runtime.Core
                     var entry = kvp.Value;
                     var fullKey = $"{saveId.Id}.{componentType.Name}.{entry.Key}";
 
-                    // Try the main key first, then try aliases
+                    // 先尝试主键，然后尝试别名
                     object valueObj = null;
                     if (saveData.HasKey(fullKey))
                     {
@@ -230,7 +230,7 @@ namespace SaveFramework.Runtime.Core
                     }
                     else
                     {
-                        // Try aliases
+                        //尝试别名
                         foreach (var alias in entry.Aliases)
                         {
                             var aliasKey = $"{saveId.Id}.{componentType.Name}.{alias}";
@@ -246,7 +246,7 @@ namespace SaveFramework.Runtime.Core
                     {
                         try
                         {
-                            // Direct assignment if value is already the correct type (avoid double-conversion)
+                            // 如果值已经是正确的类型，则直接赋值（避免双重转换）
                             if (entry.FieldType.IsInstanceOfType(valueObj))
                             {
                                 Debug.Log($"直接加载字段 '{entry.FieldName}' in {componentType.Name} : {valueObj}");
