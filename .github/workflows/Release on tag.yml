@@ -40,7 +40,7 @@ jobs:
         with:
           package-path: Assets/Plugins/SaveFramework
           project-folder: .
-
+          include-files: Assets/Plugins/SaveFramework/**/*
       - name: Rename unitypackage with tag
         shell: bash
         run: |
