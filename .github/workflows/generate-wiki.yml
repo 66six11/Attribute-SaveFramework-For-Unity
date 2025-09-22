@@ -50,7 +50,7 @@ jobs:
               echo "Committing changes to Wiki..."
               git add .
               git commit -m "Auto-update wiki from XML documentation [skip ci]"
-              git push origin main
+              git push origin HEAD
               echo "Wiki updated successfully!"
             fi
           else
