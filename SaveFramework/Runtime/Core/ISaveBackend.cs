@@ -10,8 +10,11 @@ namespace SaveFramework.Runtime.Core
     {
         /// <summary>
         /// 将数据保存到指定插槽
+        /// <param name="slotName"> 保存槽名称 </param>
+        /// <param name="data"> 要保存的数据 </param>
+        /// <param name="reWrite"> 完全覆盖或增量保存 </param>
         /// </summary>
-        void Save(string slotName, Dictionary<string, object> data);
+        void Save(string slotName, Dictionary<string, object> data, bool reWrite = true);
 
         /// <summary>
         /// 从指定插槽加载数据

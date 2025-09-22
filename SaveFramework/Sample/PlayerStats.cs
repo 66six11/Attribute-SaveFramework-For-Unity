@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using SaveFramework;
+using SaveFramework.Components;
 using SaveFramework.Runtime.Attributes;
 using SaveFramework.Runtime.Core;
 
@@ -14,28 +15,34 @@ namespace SaveFramework.Sample
     {
         [Header("Player Stats")]
         [Save("health")] public int Health = 100;
+
         [Save("mana")] public int Mana = 50;
         [Save("level")] public int Level = 1;
         [Save("exp")] public float Experience = 0f;
 
         [Header("Player Position")]
         [Save("pos")] public Vector3 Position;
+
         [Save("rot")] public Quaternion Rotation = Quaternion.identity;
 
         [Header("Player Inventory")]
         [Save] public List<int> Inventory = new List<int>();
+
         [Save("coins")] public int Currency = 0;
 
         [Header("Player Preferences")]
         [Save("volume")] public float MasterVolume = 1f;
+
         [Save("difficulty")] public GameDifficulty Difficulty = GameDifficulty.Normal;
 
         [Header("Advanced Data")]
         [Save("colors")] public Color[] FavoriteColors = new Color[] { Color.red, Color.blue, Color.green };
+
         [Save("waypoints")] public Vector3[] Waypoints = Array.Empty<Vector3>();
 
         [Header("Demo Controls")]
         [SerializeField] private string saveSlot = "demo_slot";
+
         [SerializeField] private bool logDebugInfo = true;
 
         private void Update()
@@ -65,13 +72,13 @@ namespace SaveFramework.Sample
             try
             {
                 SaveManager.Instance.Save(saveSlot);
-                
+
                 if (logDebugInfo)
                 {
                     Debug.Log($"[PlayerStats] Saved to slot '{saveSlot}'\n" +
-                             $"Health: {Health}, Mana: {Mana}, Level: {Level}\n" +
-                             $"Position: {Position}, Rotation: {Rotation}\n" +
-                             $"Inventory Items: {Inventory.Count}, Currency: {Currency}");
+                              $"Health: {Health}, Mana: {Mana}, Level: {Level}\n" +
+                              $"Position: {Position}, Rotation: {Rotation}\n" +
+                              $"Inventory Items: {Inventory.Count}, Currency: {Currency}");
                 }
             }
             catch (System.Exception ex)
@@ -89,7 +96,7 @@ namespace SaveFramework.Sample
             try
             {
                 SaveManager.Instance.Load(saveSlot);
-                
+
                 // Apply loaded position to transform
                 transform.position = Position;
                 transform.rotation = Rotation;
@@ -97,9 +104,9 @@ namespace SaveFramework.Sample
                 if (logDebugInfo)
                 {
                     Debug.Log($"[PlayerStats] Loaded from slot '{saveSlot}'\n" +
-                             $"Health: {Health}, Mana: {Mana}, Level: {Level}\n" +
-                             $"Position: {Position}, Rotation: {Rotation}\n" +
-                             $"Inventory Items: {Inventory.Count}, Currency: {Currency}");
+                              $"Health: {Health}, Mana: {Mana}, Level: {Level}\n" +
+                              $"Position: {Position}, Rotation: {Rotation}\n" +
+                              $"Inventory Items: {Inventory.Count}, Currency: {Currency}");
                 }
             }
             catch (System.Exception ex)
@@ -170,31 +177,38 @@ namespace SaveFramework.Sample
             }
         }
 
+        public void SaveOneSaveID()
+        {
+            
+        }
+
         private void OnGUI()
         {
             // Simple GUI for demo purposes
             var rect = new Rect(10, 10, 300, 500);
             GUILayout.BeginArea(rect);
-            
+
             GUILayout.Label("保存框架演示", GUI.skin.box);
             GUILayout.Label($"Health: {Health} | Mana: {Mana} | Level: {Level}");
             GUILayout.Label($"Position: {Position:F1}");
             GUILayout.Label($"Items: {Inventory.Count} | Coins: {Currency}");
             GUILayout.Label($"Difficulty: {Difficulty}");
-            
+
             GUILayout.Space(10);
             GUILayout.Label("Controls:");
             GUILayout.Label("F5 - Save | F9 - Load");
-            
+
             if (GUILayout.Button("重置统计数据"))
                 ResetStats();
-            
+
             if (GUILayout.Button("添加演示item"))
                 AddDemoItems();
-                
+
             if (GUILayout.Button("升级"))
                 LevelUp();
-            
+            if (GUILayout.Button("只保存一个SaveID的数据"))
+                SaveOneSaveID();
+
             GUILayout.EndArea();
         }
     }

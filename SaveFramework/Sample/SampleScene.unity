@@ -377,6 +377,103 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1 &506722124
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 506722127}
+  - component: {fileID: 506722126}
+  - component: {fileID: 506722125}
+  m_Layer: 0
+  m_Name: GameObject (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &506722125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506722124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45379a0f172ccf140b7f1dfc06b66661, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 3a82e8ac-0c4a-41f2-8c69-a27979f4ff0a
+--- !u!114 &506722126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506722124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe48ead38d79e248807b083011d8728, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myInt: 54645
+  myString: My String
+  myFloat: 3.14
+  myBool: 1
+  myVector3: {x: 1, y: 2, z: 3}
+  myQuaternion: {x: 1, y: 2, z: 3, w: 4}
+  myColor: {r: 1, g: 0, b: 0, a: 1}
+  myIntArray: 010000000200000003000000
+  myStringArray:
+  - Hello
+  - World
+  myFloatArray:
+  - 1.2
+  - 3.4
+  - 5.6
+  myBoolArray: 010001
+  myVector3Array:
+  - {x: 1, y: 2, z: 3}
+  - {x: 4, y: 5, z: 6}
+  myQuaternionArray:
+  - {x: 1, y: 2, z: 3, w: 4}
+  - {x: 5, y: 6, z: 7, w: 8}
+  myColorArray:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  myUInt: 10
+  myLong: 1000000000000000000
+  myULong: 1000000000000000000
+  myChar: 65
+  myByte: 255
+  mySByte: 127
+  myBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  myTransform: {fileID: 0}
+  myIntAlias: 10
+  myStringAlias: My String
+  myFloatAlias: 3.14
+--- !u!4 &506722127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506722124}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.526, y: -0.136, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,7 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Health: 100
   Mana: 50
-  Level: 1
+  Level: 56756
   Experience: 0
   Position: {x: 0, y: 0, z: 0}
   Rotation: {x: 0, y: 0, z: 0, w: 1}
@@ -514,7 +611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbe48ead38d79e248807b083011d8728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myInt: 10
+  myInt: 54645
   myString: My String
   myFloat: 3.14
   myBool: 1
@@ -550,6 +647,9 @@ MonoBehaviour:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   myTransform: {fileID: 0}
+  myIntAlias: 10
+  myStringAlias: My String
+  myFloatAlias: 3.14
 --- !u!1 &1996339635
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,4 +716,5 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 1892279185}
+  - {fileID: 506722127}
   - {fileID: 1996339638}

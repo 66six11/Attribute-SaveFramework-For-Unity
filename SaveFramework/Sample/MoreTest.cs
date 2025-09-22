@@ -35,6 +35,10 @@ public class MoreTest : MonoBehaviour
     [Save(" My Transform ")] public Transform myTransform;
 
 
+    //别名测试
+    [Save(" My Int Alias ","My Int Alias1","My Int Alias2")] public int myIntAlias = 10;
+    [Save(" My String Alias "," My String Alias1 "," My String Alias2 ")] public string myStringAlias = "My String";
+    [Save(" My Float Alias ","My Float Alias1","My Float Alias2")] public float myFloatAlias = 3.14f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

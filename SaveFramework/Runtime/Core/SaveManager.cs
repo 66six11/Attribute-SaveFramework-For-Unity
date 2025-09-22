@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using SaveFramework.Components;
@@ -14,6 +15,8 @@ namespace SaveFramework.Runtime.Core
     public class SaveManager : MonoBehaviour
     {
         private static SaveManager instance;
+
+        private Dictionary<string, SaveData> _cache = new Dictionary<string, SaveData>(); //缓存存档数据
 
         public static SaveManager Instance
         {
@@ -100,6 +103,35 @@ namespace SaveFramework.Runtime.Core
             }
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Preview API: 可能变更或删除，不建议使用。", true)]
+        public void Save(string slotName, SaveId saveId)
+        {
+            if (string.IsNullOrEmpty(slotName))
+                throw new ArgumentException("插槽名称不能为空或空", nameof(slotName));
+
+            try
+            {
+                var saveData = new SaveData();
+                var saveIds = FindObjectsByType<SaveId>(FindObjectsSortMode.None);
+
+                Debug.Log($"开始保存到插槽'{slotName}' 使用 {saveIds.Length} SaveId 组件");
+
+
+                SaveComponent(saveId, saveData);
+
+
+                backend.Save(slotName, saveData.Data, false);
+                Debug.Log($"已成功完成保存到插槽 '{slotName}' ： {saveData.Count} 条目");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"无法保存到插槽 '{slotName}': {ex.Message}");
+                throw;
+            }
+        }
+
+
         /// <summary>
         /// 从指定的插槽加载数据并应用于所有 SaveId 组件
         /// </summary>
@@ -112,6 +144,9 @@ namespace SaveFramework.Runtime.Core
             {
                 var data = backend.Load(slotName);
                 var saveData = new SaveData(data);
+
+                _cache[slotName] = saveData; //缓存数据
+
                 var saveIds = FindObjectsByType<SaveId>(FindObjectsSortMode.None);
 
                 Debug.Log($"从 slot '{slotName}' 开始加载，为 {saveIds.Length} SaveId 组件提供 {saveData.Count} 条目");
@@ -122,15 +157,16 @@ namespace SaveFramework.Runtime.Core
                 {
                     sb.AppendLine(kvp.Key + " : " + kvp.Value);
                 }
+
                 Debug.Log(sb.ToString());
                 foreach (var saveId in saveIds)
                 {
                     if (saveId == null || string.IsNullOrEmpty(saveId.Id))
                     {
                         Debug.Log($"SaveId 组件 '{saveId.name}' 未设置 ID，无法加载");
-                        continue; 
+                        continue;
                     }
-                       
+
 
                     LoadComponent(saveId, saveData);
                 }
@@ -143,6 +179,45 @@ namespace SaveFramework.Runtime.Core
                 throw;
             }
         }
+
+        /// <summary>
+        /// 加载指定 SaveId 组件的保存数据
+        /// </summary>
+        public void Load(string slotName, SaveId saveId)
+        {
+            if (saveId == null || string.IsNullOrEmpty(saveId.Id))
+                throw new ArgumentException("SaveId 组件未设置 ID", nameof(saveId));
+
+            try
+            {
+                if (HasCache(slotName))
+                {
+                    LoadComponent(saveId, _cache[slotName]);
+                }
+                else
+                {
+                    var data = backend.Load(slotName);
+                    var saveData = new SaveData(data);
+
+                    _cache[slotName] = saveData; //缓存数据
+
+                    LoadComponent(saveId, saveData);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"无法加载 SaveId 组件 '{saveId.name}': {ex.Message}");
+                throw;
+            }
+        }
+
+        // ///<summary>
+        // /// 加载指定 SaveId 组件的指定字段的保存数据
+        // /// </summary>
+        // public void Load(string slotName, SaveId saveId, string key)
+        // {
+        // }
+
 
         /// <summary>
         /// 检查是否存在保存槽
@@ -158,6 +233,24 @@ namespace SaveFramework.Runtime.Core
         public void DeleteSave(string slotName)
         {
             backend?.DeleteSave(slotName);
+        }
+
+        /// <summary>
+        /// 清除内存中加载缓存的存档数据
+        /// </summary>
+        public void ClearCache()
+        {
+            _cache.Clear();
+        }
+
+        public void ClearCache(string slotName)
+        {
+            _cache.Remove(slotName);
+        }
+
+        public bool HasCache(string slotName)
+        {
+            return _cache.ContainsKey(slotName);
         }
 
         /// <summary>
@@ -219,52 +312,56 @@ namespace SaveFramework.Runtime.Core
 
                 foreach (var kvp in saveEntries)
                 {
-                    var entry = kvp.Value;
-                    var fullKey = $"{saveId.Id}.{componentType.Name}.{entry.Key}";
+                    LoadEntry(saveId, saveData, kvp, componentType, component);
+                }
+            }
+        }
 
-                    // 先尝试主键，然后尝试别名
-                    object valueObj = null;
-                    if (saveData.HasKey(fullKey))
+        private void LoadEntry(SaveId saveId, SaveData saveData, KeyValuePair<string, SaveEntry> kvp, Type componentType, MonoBehaviour component)
+        {
+            var entry = kvp.Value;
+            var fullKey = $"{saveId.Id}.{componentType.Name}.{entry.Key}";
+
+            // 先尝试主键，然后尝试别名
+            object valueObj = null;
+            if (saveData.HasKey(fullKey))
+            {
+                valueObj = saveData.GetValue(fullKey, entry.FieldType);
+            }
+            else
+            {
+                //尝试别名
+                foreach (var alias in entry.Aliases)
+                {
+                    var aliasKey = $"{saveId.Id}.{componentType.Name}.{alias}";
+                    if (saveData.HasKey(aliasKey))
                     {
-                        valueObj = saveData.GetValue(fullKey, entry.FieldType);
+                        valueObj = saveData.GetValue(aliasKey, entry.FieldType);
+                        break;
+                    }
+                }
+            }
+
+            if (valueObj != null)
+            {
+                try
+                {
+                    // 如果值已经是正确的类型，则直接赋值（避免双重转换）
+                    if (entry.FieldType.IsInstanceOfType(valueObj))
+                    {
+                        Debug.Log($"直接加载字段 '{entry.FieldName}' in {componentType.Name} : {valueObj}");
+                        entry.SetValue(component, valueObj);
                     }
                     else
                     {
-                        //尝试别名
-                        foreach (var alias in entry.Aliases)
-                        {
-                            var aliasKey = $"{saveId.Id}.{componentType.Name}.{alias}";
-                            if (saveData.HasKey(aliasKey))
-                            {
-                                valueObj = saveData.GetValue(aliasKey, entry.FieldType);
-                                break;
-                            }
-                        }
+                        var convertedValue = Converters.FromJsonValue(valueObj, entry.FieldType);
+                        Debug.Log($"转换加载字段 '{entry.FieldName}' in {componentType.Name} : {convertedValue}");
+                        entry.SetValue(component, convertedValue);
                     }
-
-                    if (valueObj != null)
-                    {
-                        try
-                        {
-                            // 如果值已经是正确的类型，则直接赋值（避免双重转换）
-                            if (entry.FieldType.IsInstanceOfType(valueObj))
-                            {
-                                Debug.Log($"直接加载字段 '{entry.FieldName}' in {componentType.Name} : {valueObj}");
-                                entry.SetValue(component, valueObj);
-                            }
-                            else
-                            {
-                                var convertedValue = Converters.FromJsonValue(valueObj, entry.FieldType);
-                                Debug.Log($"转换加载字段 '{entry.FieldName}' in {componentType.Name} : {convertedValue}");
-                                entry.SetValue(component, convertedValue);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError($"加载失败字段 '{entry.FieldName}' in {componentType.Name}: {ex.Message}");
-                        }
-                    }
-               
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"加载失败字段 '{entry.FieldName}' in {componentType.Name}: {ex.Message}");
                 }
             }
         }
@@ -299,7 +396,7 @@ namespace SaveFramework.Runtime.Core
             foreach (var field in fields)
             {
                 var saveAttr = field.GetCustomAttributes(typeof(SaveAttribute), true).FirstOrDefault() as SaveAttribute;
-               
+
 
                 if (saveAttr == null)
                     continue;
