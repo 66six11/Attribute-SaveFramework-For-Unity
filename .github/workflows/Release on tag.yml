@@ -33,7 +33,8 @@ jobs:
           if [ -d Generated ]; then
             rsync -av Generated/ "Assets/Plugins/SaveFramework/Generated/"
           fi
-
+          ls -lR Assets/Plugins/SaveFramework
+          
       # 生成 .unitypackage（要求文件具备 .meta）
       - name: Create .unitypackage
         uses: pCYSl5EDgo/create-unitypackage@v1
