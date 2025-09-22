@@ -8,7 +8,7 @@
 
 ### Methods and Properties
 
-#### GenerateNewId (Method) {#saveid-generatenewid-method}
+#### GenerateNewId (Method)
 ```csharp
 void GenerateNewId()
 ```
@@ -16,23 +16,23 @@ void GenerateNewId()
 
 **Description:** Generate a new unique identifier
 
-#### GetDisplayName (Method) {#saveid-getdisplayname-method}
+#### GetDisplayName (Method)
 ```csharp
 string GetDisplayName()
 ```
 
 
-**Description:** Get a display name for this [SaveId](SaveFramework-Components.md#saveid) (useful for debugging)
+**Description:** Get a display name for this SaveId (useful for debugging)
 
-#### HasValidId (Method) {#saveid-hasvalidid-method}
+#### HasValidId (Method)
 ```csharp
 bool HasValidId()
 ```
 
 
-**Description:** Check if this [SaveId](SaveFramework-Components.md#saveid) has a valid identifier
+**Description:** Check if this SaveId has a valid identifier
 
-#### SetCustomId (Method) {#saveid-setcustomid-method}
+#### SetCustomId (Method)
 ```csharp
 void SetCustomId(string customId)
 ```
@@ -42,4 +42,4 @@ void SetCustomId(string customId)
 
 ---
 
-*Last updated: 2025-09-22 09:29:54 UTC*
+*Last updated: 2025-09-22 09:48:13 UTC*

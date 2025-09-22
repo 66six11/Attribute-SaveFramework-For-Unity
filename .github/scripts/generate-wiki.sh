@@ -437,6 +437,7 @@ public class WikiGenerator
         // Sort class names by length (longest first) to avoid partial matches
         var sortedClassNames = classToPageMap.Keys
             .Where(className => !string.IsNullOrEmpty(className))
+            .Where(className => !className.Contains("SaveId")) // Skip SaveId cross-references
             .OrderByDescending(name => name.Length)
             .ToList();
             
@@ -578,8 +579,7 @@ public class WikiGenerator
 
                 foreach (var method in classDoc.Methods.OrderBy(m => m.Type).ThenBy(m => m.Name))
                 {
-                    var anchor = $"{classDoc.Name.ToLower()}-{method.Name.ToLower()}-{method.Type.ToLower()}".Replace(" ", "-");
-                    sb.AppendLine($"#### {method.Name} ({method.Type}) {{#{anchor}}}");
+                    sb.AppendLine($"#### {method.Name} ({method.Type})");
                     
                     // Add method signature with proper formatting and indentation
                     if (!string.IsNullOrEmpty(method.ReturnType) && method.Type == "Method")
