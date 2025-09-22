@@ -23,30 +23,45 @@ jobs:
         run: |
           set -eux
           mkdir -p "Assets/Plugins/SaveFramework"
-          rsync -av Runtime/ "Assets/Plugins/SaveFramework/Runtime/" || true
-          rsync -av Editor/  "Assets/Plugins/SaveFramework/Editor/"  || true
-          # 若需要包含 Generated，则取消注释
+          if [ -d Runtime ]; then
+            rsync -av Runtime/ "Assets/Plugins/SaveFramework/Runtime/"
+          fi
+          if [ -d Editor ]; then
+            rsync -av Editor/ "Assets/Plugins/SaveFramework/Editor/"
+          fi
           if [ -d Generated ]; then
             rsync -av Generated/ "Assets/Plugins/SaveFramework/Generated/"
           fi
 
-      # 使用现成 action 生成 .unitypackage（要求文件具备 .meta，仓库已包含）
+      # 使用 action 生成 .unitypackage（要求文件具备 .meta）
       - name: Create .unitypackage
         uses: pCYSl5EDgo/create-unitypackage@v1
         with:
-          package-paths: |
-            Assets/Plugins/SaveFramework
-          output-name: SaveFramework-${{ github.ref_name }}.unitypackage
+          package-path: Assets/Plugins/SaveFramework
+          # include-files: |  # 如需精确列举文件可启用
+          #   Assets/Plugins/SaveFramework/Runtime/...
+          #   Assets/Plugins/SaveFramework/Editor/...
+          project-folder: .
+
+      - name: Rename unitypackage with tag
+        shell: bash
+        run: |
+          set -eux
+          FILE=$(ls -1 *.unitypackage | head -n 1)
+          mv "$FILE" "SaveFramework-${{ github.ref_name }}.unitypackage"
 
       # 额外打一个 UPM 结构的 zip，便于离线导入或镜像分发
       - name: Create UPM zip
         shell: bash
         run: |
           set -eux
-          zip -r "SaveFramework-UPM-${{ github.ref_name }}.zip" \
-            package.json Runtime Editor Sample \
-            README.md README_EN.md QUICKREF.md CHANGELOG.md \
-            2>/dev/null || true
+          ZIP="SaveFramework-UPM-${{ github.ref_name }}.zip"
+          files=(package.json README.md README_EN.md QUICKREF.md CHANGELOG.md)
+          dirs=()
+          [ -d Runtime ] && dirs+=(Runtime)
+          [ -d Editor ] && dirs+=(Editor)
+          [ -d Sample ] && dirs+=(Sample)
+          zip -r "$ZIP" "${files[@]}" "${dirs[@]}" 2>/dev/null || true
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
