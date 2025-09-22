@@ -153,7 +153,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Delete a save slot
+        /// 删除保存槽
         /// </summary>
         public void DeleteSave(string slotName)
         {
@@ -161,7 +161,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get all available save slot names
+        /// 获取所有可用的保存槽名称
         /// </summary>
         public string[] GetSaveSlots()
         {
@@ -306,7 +306,7 @@ namespace SaveFramework.Runtime.Core
 
                 if (!Converters.IsSupported(field.FieldType))
                 {
-                    Debug.LogWarning($"Field '{field.Name}' in {componentType.Name} has unsupported type '{field.FieldType.Name}' and will be skipped.");
+                    Debug.LogWarning($"字段 '{field.Name}' 在 {componentType.Name} 是不受支持的类型 '{field.FieldType.Name}' 将被跳过。");
                     continue;
                 }
 

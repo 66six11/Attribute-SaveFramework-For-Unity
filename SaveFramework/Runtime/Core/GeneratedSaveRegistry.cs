@@ -5,28 +5,28 @@ using UnityEngine;
 namespace SaveFramework.Runtime.Core
 {
     /// <summary>
-    /// Base class for generated save registries
+    /// 生成的保存注册表的基类
     /// </summary>
     public abstract class GeneratedSaveRegistry
     {
         /// <summary>
-        /// Register all generated save entries for the given component type
+        /// 注册给定组件类型生成的所有保存条目
         /// </summary>
         public abstract void RegisterSaveEntries(Type componentType, Dictionary<string, SaveEntry> entries);
 
         /// <summary>
-        /// Check if this registry handles the given component type
+        /// 检查此注册表是否处理给定的组件类型
         /// </summary>
         public abstract bool HandlesType(Type componentType);
 
         /// <summary>
-        /// Get all types handled by this registry
+        /// 获取此注册表处理的所有类型
         /// </summary>
         public abstract Type[] GetHandledTypes();
     }
 
     /// <summary>
-    /// Manager for generated save registries
+    /// 生成的保存注册表的管理器
     /// </summary>
     public static class SaveRegistryManager
     {
@@ -49,7 +49,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get save entries for a component type from registered registries
+        /// 从已注册的注册表中获取组件类型的保存条目
         /// </summary>
         public static Dictionary<string, SaveEntry> GetSaveEntries(Type componentType)
         {
@@ -62,7 +62,7 @@ namespace SaveFramework.Runtime.Core
                 if (registry.HandlesType(componentType))
                 {
                     registry.RegisterSaveEntries(componentType, entries);
-                    break; // Only use the first registry that handles this type
+                    break; // 仅使用处理此类型的第一个注册表
                 }
             }
 
@@ -70,7 +70,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Check if any registry handles the given type
+        /// 检查是否有任何注册表处理给定类型
         /// </summary>
         public static bool HasRegistryFor(Type componentType)
         {
@@ -86,7 +86,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Get all registered registries
+        /// 获取所有已注册的注册表
         /// </summary>
         public static GeneratedSaveRegistry[] GetRegistries()
         {
@@ -95,7 +95,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Clear all registered registries (used for testing)
+        /// 清除所有注册注册表（用于测试）
         /// </summary>
         public static void ClearRegistries()
         {
@@ -108,7 +108,7 @@ namespace SaveFramework.Runtime.Core
             if (isInitialized)
                 return;
 
-            // Try to find and initialize the generated registry
+            // 尝试查找并初始化生成的注册表
             TryInitializeGeneratedRegistry();
             isInitialized = true;
         }
@@ -117,21 +117,20 @@ namespace SaveFramework.Runtime.Core
         {
             try
             {
-                // Look for the generated registry class
+                // 查找生成的注册表类
                 var generatedType = Type.GetType("SaveFramework.Generated.SaveFrameworkRegistry");
                 if (generatedType != null)
                 {
-                    var instance = Activator.CreateInstance(generatedType) as GeneratedSaveRegistry;
-                    if (instance != null)
+                    if (Activator.CreateInstance(generatedType) is GeneratedSaveRegistry instance)
                     {
                         RegisterRegistry(instance);
-                        Debug.Log("Automatically registered generated save registry");
+                        Debug.Log("自动注册生成的保存注册表");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"Failed to auto-initialize generated registry: {ex.Message}");
+                Debug.LogWarning($"无法自动初始化生成的注册表: {ex.Message}");
             }
         }
     }
