@@ -14,7 +14,7 @@
 
 ### Methods and Properties
 
-#### ClearConverters (Method) {#converterregistry-clearconverters-method}
+#### ClearConverters (Method)
 ```csharp
 void ClearConverters()
 ```
@@ -22,7 +22,7 @@ void ClearConverters()
 
 **Description:** 清除所有已注册的转换器（用于测试）
 
-#### GetConverter (Method) {#converterregistry-getconverter-method}
+#### GetConverter (Method)
 ```csharp
 IValueConverter GetConverter(Type type)
 ```
@@ -30,7 +30,7 @@ IValueConverter GetConverter(Type type)
 
 **Description:** 获取指定类型的转换器
 
-#### GetSupportedTypes (Method) {#converterregistry-getsupportedtypes-method}
+#### GetSupportedTypes (Method)
 ```csharp
 Type[] GetSupportedTypes()
 ```
@@ -38,7 +38,7 @@ Type[] GetSupportedTypes()
 
 **Description:** 获取所有注册的转换器类型
 
-#### HasConverter (Method) {#converterregistry-hasconverter-method}
+#### HasConverter (Method)
 ```csharp
 bool HasConverter(Type type)
 ```
@@ -46,7 +46,7 @@ bool HasConverter(Type type)
 
 **Description:** 检查是否存在指定类型的转换器
 
-#### RegisterConverter (Method) {#converterregistry-registerconverter-method}
+#### RegisterConverter (Method)
 ```csharp
 void RegisterConverter(IValueConverter converter)
 ```
@@ -62,7 +62,7 @@ void RegisterConverter(IValueConverter converter)
 
 ### Methods and Properties
 
-#### FromJsonValue (Method) {#ivalueconverter-fromjsonvalue-method}
+#### FromJsonValue (Method)
 ```csharp
 object FromJsonValue(object jsonValue)
 ```
@@ -70,7 +70,7 @@ object FromJsonValue(object jsonValue)
 
 **Description:** 将 JSON 值转换回目标类型
 
-#### ToJsonValue (Method) {#ivalueconverter-tojsonvalue-method}
+#### ToJsonValue (Method)
 ```csharp
 object ToJsonValue(object value)
 ```
@@ -78,7 +78,7 @@ object ToJsonValue(object value)
 
 **Description:** 将值转换为 JSON 可序列化格式
 
-#### TargetType (Property) {#ivalueconverter-targettype-property}
+#### TargetType (Property)
 ```csharp
 Type TargetType { get; set; }
 ```
@@ -93,7 +93,7 @@ Type TargetType { get; set; }
 
 ### Methods and Properties
 
-#### FromJsonValue (Method) {#ivalueconverter-fromjsonvalue-method}
+#### FromJsonValue (Method)
 ```csharp
 T FromJsonValue(object jsonValue)
 ```
@@ -101,7 +101,7 @@ T FromJsonValue(object jsonValue)
 
 **Description:** 将 JSON 值转换回强类型目标
 
-#### ToJsonValue (Method) {#ivalueconverter-tojsonvalue-method}
+#### ToJsonValue (Method)
 ```csharp
 object ToJsonValue(T value)
 ```
@@ -118,7 +118,7 @@ object ToJsonValue(T value)
 
 ### Methods and Properties
 
-#### ReadFloatArray (Method) {#numericarrayreader-readfloatarray-method}
+#### ReadFloatArray (Method)
 ```csharp
 float[] ReadFloatArray(object obj)
 ```
@@ -126,7 +126,7 @@ float[] ReadFloatArray(object obj)
 
 **Description:** 从各种输入格式解析浮点数组
 
-#### ReadIntArray (Method) {#numericarrayreader-readintarray-method}
+#### ReadIntArray (Method)
 ```csharp
 int[] ReadIntArray(object obj)
 ```

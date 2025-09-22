@@ -8,7 +8,7 @@
 
 ### Methods and Properties
 
-#### FromJsonValue (Method) {#converters-fromjsonvalue-method}
+#### FromJsonValue (Method)
 ```csharp
 object FromJsonValue(
     object jsonValue,
@@ -19,7 +19,7 @@ object FromJsonValue(
 
 **Description:** Convert a JSON value back to the target type
 
-#### IsSupported (Method) {#converters-issupported-method}
+#### IsSupported (Method)
 ```csharp
 bool IsSupported(Type type)
 ```
@@ -27,7 +27,7 @@ bool IsSupported(Type type)
 
 **Description:** Check if a type is supported for serialization
 
-#### ToJsonValue (Method) {#converters-tojsonvalue-method}
+#### ToJsonValue (Method)
 ```csharp
 object ToJsonValue(
     object value,
@@ -52,7 +52,7 @@ object ToJsonValue(
 
 ### Methods and Properties
 
-#### DeleteSave (Method) {#isavebackend-deletesave-method}
+#### DeleteSave (Method)
 ```csharp
 void DeleteSave(string slotName)
 ```
@@ -60,7 +60,7 @@ void DeleteSave(string slotName)
 
 **Description:** 删除保存槽
 
-#### GetSaveSlots (Method) {#isavebackend-getsaveslots-method}
+#### GetSaveSlots (Method)
 ```csharp
 string[] GetSaveSlots()
 ```
@@ -68,7 +68,7 @@ string[] GetSaveSlots()
 
 **Description:** 获取所有可用的保存槽名称
 
-#### HasSave (Method) {#isavebackend-hassave-method}
+#### HasSave (Method)
 ```csharp
 bool HasSave(string slotName)
 ```
@@ -76,7 +76,7 @@ bool HasSave(string slotName)
 
 **Description:** 检查是否存在保存槽
 
-#### Load (Method) {#isavebackend-load-method}
+#### Load (Method)
 ```csharp
 Dictionary<string, object> Load(string slotName)
 ```
@@ -84,7 +84,7 @@ Dictionary<string, object> Load(string slotName)
 
 **Description:** 从指定插槽加载数据
 
-#### Save (Method) {#isavebackend-save-method}
+#### Save (Method)
 ```csharp
 void Save(
     string slotName,
@@ -109,7 +109,7 @@ void Save(
 
 ### Methods and Properties
 
-#### Clear (Method) {#savedata-clear-method}
+#### Clear (Method)
 ```csharp
 void Clear()
 ```
@@ -117,7 +117,7 @@ void Clear()
 
 **Description:** 清除所有数据
 
-#### GetValue (Method) {#savedata-getvalue-method}
+#### GetValue (Method)
 ```csharp
 object GetValue(
     string key,
@@ -129,7 +129,7 @@ object GetValue(
 
 **Description:** 获取给定键的值作为对象
 
-#### HasKey (Method) {#savedata-haskey-method}
+#### HasKey (Method)
 ```csharp
 bool HasKey(string key)
 ```
@@ -137,7 +137,7 @@ bool HasKey(string key)
 
 **Description:** 检查密钥是否存在
 
-#### RemoveKey (Method) {#savedata-removekey-method}
+#### RemoveKey (Method)
 ```csharp
 bool RemoveKey(string key)
 ```
@@ -145,7 +145,7 @@ bool RemoveKey(string key)
 
 **Description:** 从数据中删除key
 
-#### SetValue (Method) {#savedata-setvalue-method}
+#### SetValue (Method)
 ```csharp
 void SetValue(
     string key,
@@ -164,7 +164,7 @@ void SetValue(
 
 ### Methods and Properties
 
-#### GetValue (Method) {#saveentry-getvalue-method}
+#### GetValue (Method)
 ```csharp
 object GetValue(object component)
 ```
@@ -172,7 +172,7 @@ object GetValue(object component)
 
 **Description:** 从组件实例获取值
 
-#### MatchesKey (Method) {#saveentry-matcheskey-method}
+#### MatchesKey (Method)
 ```csharp
 bool MatchesKey(string searchKey)
 ```
@@ -180,7 +180,7 @@ bool MatchesKey(string searchKey)
 
 **Description:** 检查此条目是否与给定的键（包括别名）匹配
 
-#### SetValue (Method) {#saveentry-setvalue-method}
+#### SetValue (Method)
 ```csharp
 void SetValue(
     object component,
@@ -199,7 +199,7 @@ void SetValue(
 
 ### Methods and Properties
 
-#### ClearCache (Method) {#savemanager-clearcache-method}
+#### ClearCache (Method)
 ```csharp
 void ClearCache()
 ```
@@ -207,7 +207,7 @@ void ClearCache()
 
 **Description:** 清除内存中加载缓存的存档数据
 
-#### DeleteSave (Method) {#savemanager-deletesave-method}
+#### DeleteSave (Method)
 ```csharp
 void DeleteSave(string slotName)
 ```
@@ -215,7 +215,7 @@ void DeleteSave(string slotName)
 
 **Description:** 删除保存槽
 
-#### GetSaveSlots (Method) {#savemanager-getsaveslots-method}
+#### GetSaveSlots (Method)
 ```csharp
 string[] GetSaveSlots()
 ```
@@ -223,7 +223,7 @@ string[] GetSaveSlots()
 
 **Description:** 获取所有可用的保存槽名称
 
-#### HasSave (Method) {#savemanager-hassave-method}
+#### HasSave (Method)
 ```csharp
 bool HasSave(string slotName)
 ```
@@ -231,15 +231,15 @@ bool HasSave(string slotName)
 
 **Description:** 检查是否存在保存槽
 
-#### Load (Method) {#savemanager-load-method}
+#### Load (Method)
 ```csharp
 void Load(string slotName)
 ```
 
 
-**Description:** 从指定的插槽加载数据并应用于所有 [SaveId](SaveFramework-Components.md#saveid) 组件
+**Description:** 从指定的插槽加载数据并应用于所有 SaveId 组件
 
-#### Load (Method) {#savemanager-load-method}
+#### Load (Method)
 ```csharp
 void Load(
     string slotName,
@@ -248,17 +248,17 @@ void Load(
 ```
 
 
-**Description:** 加载指定 [SaveId](SaveFramework-Components.md#saveid) 组件的保存数据
+**Description:** 加载指定 SaveId 组件的保存数据
 
-#### Save (Method) {#savemanager-save-method}
+#### Save (Method)
 ```csharp
 void Save(string slotName)
 ```
 
 
-**Description:** 将所有 [SaveId](SaveFramework-Components.md#saveid) 组件保存到指定的插槽中
+**Description:** 将所有 SaveId 组件保存到指定的插槽中
 
-#### SetBackend (Method) {#savemanager-setbackend-method}
+#### SetBackend (Method)
 ```csharp
 void SetBackend(ISaveBackend customBackend)
 ```

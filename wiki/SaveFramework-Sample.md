@@ -14,7 +14,7 @@
 
 ### Methods and Properties
 
-#### AddDemoItems (Method) {#playerstats-adddemoitems-method}
+#### AddDemoItems (Method)
 ```csharp
 void AddDemoItems()
 ```
@@ -22,7 +22,7 @@ void AddDemoItems()
 
 **Description:** Add some demo items to inventory
 
-#### LevelUp (Method) {#playerstats-levelup-method}
+#### LevelUp (Method)
 ```csharp
 void LevelUp()
 ```
@@ -30,7 +30,7 @@ void LevelUp()
 
 **Description:** Level up the player
 
-#### Load (Method) {#playerstats-load-method}
+#### Load (Method)
 ```csharp
 void Load()
 ```
@@ -38,7 +38,7 @@ void Load()
 
 **Description:** Load stats from the demo slot
 
-#### ResetStats (Method) {#playerstats-resetstats-method}
+#### ResetStats (Method)
 ```csharp
 void ResetStats()
 ```
@@ -46,7 +46,7 @@ void ResetStats()
 
 **Description:** Reset stats to default values
 
-#### Save (Method) {#playerstats-save-method}
+#### Save (Method)
 ```csharp
 void Save()
 ```
