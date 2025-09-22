@@ -37,7 +37,7 @@ SaveFramework 是一个专为 Unity 设计的轻量级、易用的存档系统�
 > 依赖 com.unity.nuget.newtonsoft-json
 
 > [!WARNING]
-> 请勿使用包管理器（还未完善）
+> 请勿使用包管理器（暂不支持UPM包）
 
 ### 2. 基础设置
 
