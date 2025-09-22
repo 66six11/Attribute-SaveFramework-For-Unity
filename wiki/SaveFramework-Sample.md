@@ -1,5 +1,17 @@
 # SaveFramework.Sample
 
+[← Back to Home](Home.md)
+
+## Table of Contents
+
+- [GameDifficulty](#gamedifficulty)
+- [PlayerStats](#playerstats)
+  - [AddDemoItems (Method)](#playerstats-adddemoitems-method)
+  - [LevelUp (Method)](#playerstats-levelup-method)
+  - [Load (Method)](#playerstats-load-method)
+  - [ResetStats (Method)](#playerstats-resetstats-method)
+  - [Save (Method)](#playerstats-save-method)
+
 ## GameDifficulty
 
 **Description:** Example enum for difficulty settings
@@ -12,21 +24,46 @@
 
 ### Methods and Properties
 
-#### AddDemoItems (Method)
-Add some demo items to inventory
+#### AddDemoItems (Method) {#playerstats-adddemoitems-method}
+```csharp
+void AddDemoItems()
+```
 
-#### LevelUp (Method)
-Level up the player
 
-#### Load (Method)
-Load stats from the demo slot
+**Description:** Add some demo items to inventory
 
-#### ResetStats (Method)
-Reset stats to default values
+#### LevelUp (Method) {#playerstats-levelup-method}
+```csharp
+void LevelUp()
+```
 
-#### Save (Method)
-Save current stats to the demo slot
+
+**Description:** Level up the player
+
+#### Load (Method) {#playerstats-load-method}
+```csharp
+void Load()
+```
+
+
+**Description:** Load stats from the demo slot
+
+#### ResetStats (Method) {#playerstats-resetstats-method}
+```csharp
+void ResetStats()
+```
+
+
+**Description:** Reset stats to default values
+
+#### Save (Method) {#playerstats-save-method}
+```csharp
+void Save()
+```
+
+
+**Description:** Save current stats to the demo slot
 
 ---
 
-*Last updated: 2025-09-22 08:50:54 UTC*
+*Last updated: 2025-09-22 09:17:25 UTC*

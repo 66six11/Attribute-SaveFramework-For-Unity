@@ -52,8 +52,13 @@ using System.Text.RegularExpressions;
 public class WikiGenerator
 {
     private static readonly Regex ClassPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|abstract|sealed)?\s*(?:class|interface|struct|enum)\s+([A-Za-z_][A-Za-z0-9_]*)", RegexOptions.Multiline);
-    private static readonly Regex MethodPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|virtual|override|abstract)?\s*(?:\w+(?:<[^>]*>)?(?:\[\])?\s+)([A-Za-z_][A-Za-z0-9_]*)\s*\(", RegexOptions.Multiline);
-    private static readonly Regex PropertyPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|virtual|override|abstract)?\s*(?:\w+(?:<[^>]*>)?(?:\[\])?\s+)([A-Za-z_][A-Za-z0-9_]*)\s*{\s*(?:get|set)", RegexOptions.Multiline);
+    
+    // Enhanced method pattern to capture return type and parameters with better generic support
+    private static readonly Regex MethodPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|virtual|override|abstract)?\s*([^=\s]+(?:<[^>]*>)?(?:\[\])?)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)", RegexOptions.Multiline);
+    
+    // Enhanced property pattern to capture type and modifiers with better generic support
+    private static readonly Regex PropertyPattern = new Regex(@"^\s*(?:public|internal|private|protected)?\s*(?:static|virtual|override|abstract)?\s*([^=\s]+(?:<[^>]*>)?(?:\[\])?)\s+([A-Za-z_][A-Za-z0-9_]*)\s*{\s*(?:get|set)", RegexOptions.Multiline);
+    
     private static readonly Regex NamespacePattern = new Regex(@"^\s*namespace\s+([A-Za-z_][A-Za-z0-9_.]*)", RegexOptions.Multiline);
     private static readonly Regex XmlDocPattern = new Regex(@"^\s*///\s*(.*?)$", RegexOptions.Multiline);
     private static readonly Regex SummaryPattern = new Regex(@"<summary>\s*(.*?)\s*</summary>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
@@ -61,6 +66,9 @@ public class WikiGenerator
     private static readonly Regex ReturnsPattern = new Regex(@"<returns>\s*(.*?)\s*</returns>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
     private static readonly Regex RemarksPattern = new Regex(@"<remarks>\s*(.*?)\s*</remarks>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
     private static readonly Regex ExamplePattern = new Regex(@"<example>\s*(.*?)\s*</example>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+    
+    // Enhanced pattern to match parameter name and type from parameter list with better generic support
+    private static readonly Regex ParameterTypePattern = new Regex(@"([^,\s]+(?:<[^>]*>)?(?:\[\])?)\s+([A-Za-z_][A-Za-z0-9_]*)", RegexOptions.IgnoreCase);
 
     public static void Main(string[] args)
     {
@@ -157,15 +165,21 @@ public class WikiGenerator
                         
                         if (methodMatch.Success)
                         {
-                            var methodName = methodMatch.Groups[1].Value;
+                            var returnType = methodMatch.Groups[1].Value.Trim();
+                            var methodName = methodMatch.Groups[2].Value;
+                            var parametersString = methodMatch.Groups[3].Value;
                             var methodXmlDoc = ExtractXmlDocForItem(lines, j);
                             
                             if (!string.IsNullOrEmpty(methodXmlDoc))
                             {
+                                var paramTypes = ExtractParameterTypes(parametersString);
+                                
                                 classDoc.Methods.Add(new MethodDocumentation
                                 {
                                     Name = methodName,
                                     Type = "Method",
+                                    ReturnType = returnType,
+                                    ParameterTypes = paramTypes,
                                     Summary = ExtractSummary(methodXmlDoc),
                                     Parameters = ExtractParameters(methodXmlDoc),
                                     Returns = ExtractReturns(methodXmlDoc),
@@ -176,7 +190,8 @@ public class WikiGenerator
                         }
                         else if (propMatch.Success)
                         {
-                            var propName = propMatch.Groups[1].Value;
+                            var propType = propMatch.Groups[1].Value.Trim();
+                            var propName = propMatch.Groups[2].Value;
                             var propXmlDoc = ExtractXmlDocForItem(lines, j);
                             
                             if (!string.IsNullOrEmpty(propXmlDoc))
@@ -185,6 +200,8 @@ public class WikiGenerator
                                 {
                                     Name = propName,
                                     Type = "Property",
+                                    ReturnType = propType,
+                                    ParameterTypes = new List<ParameterTypeInfo>(),
                                     Summary = ExtractSummary(propXmlDoc),
                                     Parameters = ExtractParameters(propXmlDoc),
                                     Returns = ExtractReturns(propXmlDoc),
@@ -305,6 +322,76 @@ public class WikiGenerator
         return match.Success ? match.Groups[1].Value.Trim() : "";
     }
 
+    private static List<ParameterTypeInfo> ExtractParameterTypes(string parametersString)
+    {
+        var paramTypes = new List<ParameterTypeInfo>();
+        
+        if (string.IsNullOrWhiteSpace(parametersString))
+            return paramTypes;
+            
+        // Handle complex parameter parsing for generic types
+        var parameters = SplitParameters(parametersString);
+        foreach (var param in parameters)
+        {
+            var trimmedParam = param.Trim();
+            if (string.IsNullOrEmpty(trimmedParam))
+                continue;
+                
+            // Find the last space to separate type from name
+            var lastSpaceIndex = trimmedParam.LastIndexOf(' ');
+            if (lastSpaceIndex > 0)
+            {
+                var type = trimmedParam.Substring(0, lastSpaceIndex).Trim();
+                var name = trimmedParam.Substring(lastSpaceIndex + 1).Trim();
+                
+                // Clean up any default values
+                var equalIndex = name.IndexOf('=');
+                if (equalIndex >= 0)
+                {
+                    name = name.Substring(0, equalIndex).Trim();
+                }
+                
+                paramTypes.Add(new ParameterTypeInfo
+                {
+                    Type = type,
+                    Name = name
+                });
+            }
+        }
+        
+        return paramTypes;
+    }
+    
+    private static List<string> SplitParameters(string parametersString)
+    {
+        var parameters = new List<string>();
+        var currentParam = new StringBuilder();
+        var angleDepth = 0;
+        
+        for (int i = 0; i < parametersString.Length; i++)
+        {
+            var c = parametersString[i];
+            
+            if (c == '<')
+                angleDepth++;
+            else if (c == '>')
+                angleDepth--;
+            else if (c == ',' && angleDepth == 0)
+            {
+                parameters.Add(currentParam.ToString());
+                currentParam.Clear();
+                continue;
+            }
+            
+            currentParam.Append(c);
+        }
+        
+        if (currentParam.Length > 0)
+            parameters.Add(currentParam.ToString());
+            
+        return parameters;
+    }
+
     private static void GenerateWikiPages(Dictionary<string, List<ClassDocumentation>> documentation, string outputDir)
     {
         // Generate main index page
@@ -346,6 +433,35 @@ public class WikiGenerator
         
         sb.AppendLine($"# {namespaceName}");
         sb.AppendLine();
+        
+        // Add navigation back to home
+        sb.AppendLine("[← Back to Home](Home.md)");
+        sb.AppendLine();
+        
+        // Add table of contents
+        if (classes.Any())
+        {
+            sb.AppendLine("## Table of Contents");
+            sb.AppendLine();
+            foreach (var classDoc in classes.OrderBy(x => x.Name))
+            {
+                sb.AppendLine($"- [{classDoc.Name}](#{classDoc.Name.ToLower()})");
+                
+                if (classDoc.Methods.Any())
+                {
+                    foreach (var method in classDoc.Methods.Take(5).OrderBy(m => m.Name)) // Show first 5 methods
+                    {
+                        var anchor = $"{classDoc.Name.ToLower()}-{method.Name.ToLower()}-{method.Type.ToLower()}".Replace(" ", "-");
+                        sb.AppendLine($"  - [{method.Name} ({method.Type})](#{anchor})");
+                    }
+                    if (classDoc.Methods.Count > 5)
+                    {
+                        sb.AppendLine($"  - ... and {classDoc.Methods.Count - 5} more");
+                    }
+                }
+            }
+            sb.AppendLine();
+        }
 
         foreach (var classDoc in classes.OrderBy(x => x.Name))
         {
@@ -397,11 +513,54 @@ public class WikiGenerator
 
                 foreach (var method in classDoc.Methods.OrderBy(m => m.Type).ThenBy(m => m.Name))
                 {
-                    sb.AppendLine($"#### {method.Name} ({method.Type})");
+                    var anchor = $"{classDoc.Name.ToLower()}-{method.Name.ToLower()}-{method.Type.ToLower()}".Replace(" ", "-");
+                    sb.AppendLine($"#### {method.Name} ({method.Type}) {{#{anchor}}}");
+                    
+                    // Add method signature with proper formatting and indentation
+                    if (!string.IsNullOrEmpty(method.ReturnType) && method.Type == "Method")
+                    {
+                        var signature = new StringBuilder();
+                        signature.AppendLine("```csharp");
+                        signature.Append($"{method.ReturnType} {method.Name}(");
+                        
+                        if (method.ParameterTypes.Any())
+                        {
+                            if (method.ParameterTypes.Count == 1)
+                            {
+                                // Single parameter on same line
+                                var param = method.ParameterTypes[0];
+                                signature.Append($"{param.Type} {param.Name}");
+                            }
+                            else
+                            {
+                                // Multiple parameters with proper indentation
+                                signature.AppendLine();
+                                for (int i = 0; i < method.ParameterTypes.Count; i++)
+                                {
+                                    var param = method.ParameterTypes[i];
+                                    var comma = i < method.ParameterTypes.Count - 1 ? "," : "";
+                                    signature.AppendLine($"    {param.Type} {param.Name}{comma}");
+                                }
+                                signature.Append("");
+                            }
+                        }
+                        
+                        signature.AppendLine(")");
+                        signature.AppendLine("```");
+                        sb.AppendLine(signature.ToString());
+                        sb.AppendLine();
+                    }
+                    else if (!string.IsNullOrEmpty(method.ReturnType) && method.Type == "Property")
+                    {
+                        sb.AppendLine("```csharp");
+                        sb.AppendLine($"{method.ReturnType} {method.Name} {{ get; set; }}");
+                        sb.AppendLine("```");
+                        sb.AppendLine();
+                    }
                     
                     if (!string.IsNullOrEmpty(method.Summary))
                     {
-                        sb.AppendLine($"{method.Summary}");
+                        sb.AppendLine($"**Description:** {method.Summary}");
                         sb.AppendLine();
                     }
 
@@ -410,14 +569,18 @@ public class WikiGenerator
                         sb.AppendLine("**Parameters:**");
                         foreach (var param in method.Parameters)
                         {
-                            sb.AppendLine($"- `{param.Name}`: {param.Description}");
+                            // Try to find type information for this parameter
+                            var paramTypeInfo = method.ParameterTypes.FirstOrDefault(p => p.Name == param.Name);
+                            var typeInfo = paramTypeInfo != null ? $" (`{paramTypeInfo.Type}`)" : "";
+                            sb.AppendLine($"- `{param.Name}`{typeInfo}: {param.Description}");
                         }
                         sb.AppendLine();
                     }
 
                     if (!string.IsNullOrEmpty(method.Returns))
                     {
-                        sb.AppendLine($"**Returns:** {method.Returns}");
+                        var returnTypeInfo = !string.IsNullOrEmpty(method.ReturnType) ? $" (`{method.ReturnType}`)" : "";
+                        sb.AppendLine($"**Returns**{returnTypeInfo}: {method.Returns}");
                         sb.AppendLine();
                     }
 
@@ -431,7 +594,23 @@ public class WikiGenerator
                     {
                         sb.AppendLine("**Example:**");
                         sb.AppendLine("```csharp");
-                        sb.AppendLine(method.Example);
+                        
+                        // Format example code with proper indentation
+                        var exampleLines = method.Example.Split('\n');
+                        foreach (var line in exampleLines)
+                        {
+                            // Clean up any existing indentation and add consistent indentation
+                            var trimmedLine = line.Trim();
+                            if (!string.IsNullOrEmpty(trimmedLine))
+                            {
+                                sb.AppendLine(trimmedLine);
+                            }
+                            else
+                            {
+                                sb.AppendLine();
+                            }
+                        }
+                        
                         sb.AppendLine("```");
                         sb.AppendLine();
                     }
@@ -464,11 +643,19 @@ public class MethodDocumentation
 {
     public string Name { get; set; }
     public string Type { get; set; } // "Method" or "Property"
+    public string ReturnType { get; set; }
+    public List<ParameterTypeInfo> ParameterTypes { get; set; } = new List<ParameterTypeInfo>();
     public string Summary { get; set; }
     public List<ParameterDoc> Parameters { get; set; } = new List<ParameterDoc>();
     public string Returns { get; set; }
     public string Remarks { get; set; }
     public string Example { get; set; }
+}
+
+public class ParameterTypeInfo
+{
+    public string Type { get; set; }
+    public string Name { get; set; }
 }
 
 public class ParameterDoc
