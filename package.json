@@ -1,5 +1,5 @@
 {
-  "name": "com.saveframework.unity",
+  "name": "com.66six11.saveframework.unity",
   "version": "1.0.0",
   "displayName": "SaveFramework",
   "description": "A lightweight, easy-to-use save system framework for Unity. Enables automatic save and load of game data through simple attribute marking.",
@@ -14,7 +14,7 @@
     "unity"
   ],
   "author": {
-    "name": "SaveFramework Contributors"
+    "name": "66six11"
   },
   "repository": {
     "type": "git",
