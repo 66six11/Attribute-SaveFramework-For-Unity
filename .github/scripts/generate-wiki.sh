@@ -394,14 +394,97 @@ public class WikiGenerator
 
     private static void GenerateWikiPages(Dictionary<string, List<ClassDocumentation>> documentation, string outputDir)
     {
+        // Build a global mapping of class names to their wiki pages for cross-referencing
+        var classToPageMap = BuildClassToPageMapping(documentation);
+        
         // Generate main index page
         GenerateIndexPage(documentation, outputDir);
 
-        // Generate individual namespace pages
+        // Generate individual namespace pages with cross-references
         foreach (var ns in documentation)
         {
-            GenerateNamespacePage(ns.Key, ns.Value, outputDir);
+            GenerateNamespacePage(ns.Key, ns.Value, outputDir, classToPageMap);
         }
+    }
+    
+    private static Dictionary<string, string> BuildClassToPageMapping(Dictionary<string, List<ClassDocumentation>> documentation)
+    {
+        var classToPageMap = new Dictionary<string, string>();
+        
+        foreach (var ns in documentation)
+        {
+            var safeNamespace = ns.Key.Replace(".", "-");
+            var pageFileName = $"{safeNamespace}.md";
+            
+            foreach (var classDoc in ns.Value)
+            {
+                // Map both simple class name and fully qualified name
+                classToPageMap[classDoc.Name] = $"{pageFileName}#{classDoc.Name.ToLower()}";
+                classToPageMap[$"{ns.Key}.{classDoc.Name}"] = $"{pageFileName}#{classDoc.Name.ToLower()}";
+            }
+        }
+        
+        return classToPageMap;
+    }
+    
+    private static string AddCrossReferences(string text, Dictionary<string, string> classToPageMap)
+    {
+        if (string.IsNullOrEmpty(text) || !classToPageMap.Any())
+            return text;
+            
+        var result = text;
+        
+        // Sort class names by length (longest first) to avoid partial matches
+        var sortedClassNames = classToPageMap.Keys
+            .Where(className => !string.IsNullOrEmpty(className))
+            .OrderByDescending(name => name.Length)
+            .ToList();
+            
+        foreach (var className in sortedClassNames)
+        {
+            var pageLink = classToPageMap[className];
+            
+            // Create patterns to match the class name in various contexts
+            // Match whole words only, case-sensitive for exact matches
+            var patterns = new[]
+            {
+                $@"\b{Regex.Escape(className)}\b",  // Exact match
+                $@"\b{Regex.Escape(className.Split('.').Last())}\b"  // Simple class name only
+            };
+            
+            foreach (var pattern in patterns)
+            {
+                var regex = new Regex(pattern);
+                var matches = regex.Matches(result);
+                
+                // Process matches from right to left to avoid index shifting
+                var processedMatches = new HashSet<string>();
+                for (int i = matches.Count - 1; i >= 0; i--)
+                {
+                    var match = matches[i];
+                    var matchedText = match.Value;
+                    
+                    // Avoid double-linking the same text
+                    if (processedMatches.Contains(matchedText))
+                        continue;
+                        
+                    // Don't link if already inside markdown link syntax
+                    var beforeMatch = result.Substring(0, match.Index);
+                    var afterMatch = result.Substring(match.Index + match.Length);
+                    
+                    if (beforeMatch.EndsWith("[") || afterMatch.StartsWith("]("))
+                        continue;
+                        
+                    // Create the link
+                    var linkedText = $"[{matchedText}]({pageLink})";
+                    result = result.Substring(0, match.Index) + linkedText + result.Substring(match.Index + match.Length);
+                    
+                    processedMatches.Add(matchedText);
+                }
+            }
+        }
+        
+        return result;
     }
 
     private static void GenerateIndexPage(Dictionary<string, List<ClassDocumentation>> documentation, string outputDir)
@@ -426,7 +509,7 @@ public class WikiGenerator
         File.WriteAllText(Path.Combine(outputDir, "Home.md"), sb.ToString());
     }
 
-    private static void GenerateNamespacePage(string namespaceName, List<ClassDocumentation> classes, string outputDir)
+    private static void GenerateNamespacePage(string namespaceName, List<ClassDocumentation> classes, string outputDir, Dictionary<string, string> classToPageMap)
     {
         var sb = new StringBuilder();
         var safeNamespace = namespaceName.Replace(".", "-");
@@ -438,30 +521,7 @@ public class WikiGenerator
         sb.AppendLine("[← Back to Home](Home.md)");
         sb.AppendLine();
         
-        // Add table of contents
-        if (classes.Any())
-        {
-            sb.AppendLine("## Table of Contents");
-            sb.AppendLine();
-            foreach (var classDoc in classes.OrderBy(x => x.Name))
-            {
-                sb.AppendLine($"- [{classDoc.Name}](#{classDoc.Name.ToLower()})");
-                
-                if (classDoc.Methods.Any())
-                {
-                    foreach (var method in classDoc.Methods.Take(5).OrderBy(m => m.Name)) // Show first 5 methods
-                    {
-                        var anchor = $"{classDoc.Name.ToLower()}-{method.Name.ToLower()}-{method.Type.ToLower()}".Replace(" ", "-");
-                        sb.AppendLine($"  - [{method.Name} ({method.Type})](#{anchor})");
-                    }
-                    if (classDoc.Methods.Count > 5)
-                    {
-                        sb.AppendLine($"  - ... and {classDoc.Methods.Count - 5} more");
-                    }
-                }
-            }
-            sb.AppendLine();
-        }
+        // NOTE: Table of contents removed as per requirements - 不需要页面中的目录
 
         foreach (var classDoc in classes.OrderBy(x => x.Name))
         {
@@ -470,7 +530,9 @@ public class WikiGenerator
 
             if (!string.IsNullOrEmpty(classDoc.Summary))
             {
-                sb.AppendLine($"**Description:** {classDoc.Summary}");
+                // Add cross-references to other framework types in the summary
+                var enhancedSummary = AddCrossReferences(classDoc.Summary, classToPageMap);
+                sb.AppendLine($"**Description:** {enhancedSummary}");
                 sb.AppendLine();
             }
 
@@ -479,20 +541,23 @@ public class WikiGenerator
                 sb.AppendLine("**Parameters:**");
                 foreach (var param in classDoc.Parameters)
                 {
-                    sb.AppendLine($"- `{param.Name}`: {param.Description}");
+                    var enhancedDescription = AddCrossReferences(param.Description, classToPageMap);
+                    sb.AppendLine($"- `{param.Name}`: {enhancedDescription}");
                 }
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrEmpty(classDoc.Returns))
             {
-                sb.AppendLine($"**Returns:** {classDoc.Returns}");
+                var enhancedReturns = AddCrossReferences(classDoc.Returns, classToPageMap);
+                sb.AppendLine($"**Returns:** {enhancedReturns}");
                 sb.AppendLine();
             }
 
             if (!string.IsNullOrEmpty(classDoc.Remarks))
             {
-                sb.AppendLine($"**Remarks:** {classDoc.Remarks}");
+                var enhancedRemarks = AddCrossReferences(classDoc.Remarks, classToPageMap);
+                sb.AppendLine($"**Remarks:** {enhancedRemarks}");
                 sb.AppendLine();
             }
 
@@ -560,7 +625,8 @@ public class WikiGenerator
                     
                     if (!string.IsNullOrEmpty(method.Summary))
                     {
-                        sb.AppendLine($"**Description:** {method.Summary}");
+                        var enhancedSummary = AddCrossReferences(method.Summary, classToPageMap);
+                        sb.AppendLine($"**Description:** {enhancedSummary}");
                         sb.AppendLine();
                     }
 
@@ -572,7 +638,8 @@ public class WikiGenerator
                             // Try to find type information for this parameter
                             var paramTypeInfo = method.ParameterTypes.FirstOrDefault(p => p.Name == param.Name);
                             var typeInfo = paramTypeInfo != null ? $" (`{paramTypeInfo.Type}`)" : "";
-                            sb.AppendLine($"- `{param.Name}`{typeInfo}: {param.Description}");
+                            var enhancedDescription = AddCrossReferences(param.Description, classToPageMap);
+                            sb.AppendLine($"- `{param.Name}`{typeInfo}: {enhancedDescription}");
                         }
                         sb.AppendLine();
                     }
@@ -580,13 +647,15 @@ public class WikiGenerator
                     if (!string.IsNullOrEmpty(method.Returns))
                     {
                         var returnTypeInfo = !string.IsNullOrEmpty(method.ReturnType) ? $" (`{method.ReturnType}`)" : "";
-                        sb.AppendLine($"**Returns**{returnTypeInfo}: {method.Returns}");
+                        var enhancedReturns = AddCrossReferences(method.Returns, classToPageMap);
+                        sb.AppendLine($"**Returns**{returnTypeInfo}: {enhancedReturns}");
                         sb.AppendLine();
                     }
 
                     if (!string.IsNullOrEmpty(method.Remarks))
                     {
-                        sb.AppendLine($"**Remarks:** {method.Remarks}");
+                        var enhancedRemarks = AddCrossReferences(method.Remarks, classToPageMap);
+                        sb.AppendLine($"**Remarks:** {enhancedRemarks}");
                         sb.AppendLine();
                     }
 
