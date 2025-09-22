@@ -1,15 +1,14 @@
 
-
 // 此文件由 SaveFramework.Editor.ConverterRegistryCodeGen 自动生成.
 // 请勿手动修改此文件.
-
 
 using UnityEngine;
 
 namespace SaveFramework.Runtime.Core.Conversion.Generated
 {
-    // 在编辑器与运行时两侧都确保已注册
+#if UNITY_EDITOR
     [UnityEditor.InitializeOnLoad]
+#endif
     public static class GeneratedConverterRegistry
     {
         static GeneratedConverterRegistry()
@@ -32,12 +31,44 @@ namespace SaveFramework.Runtime.Core.Conversion.Generated
             if (SaveFramework.Runtime.Core.Conversion.ConverterRegistry.HasConverter(typeof(UnityEngine.Vector3)))
                 return;
 
-            ConverterRegistry.RegisterConverter(new global::SaveFramework.Runtime.Core.Conversion.BuiltIn.BoundsConverter());
-            ConverterRegistry.RegisterConverter(new global::SaveFramework.Runtime.Core.Conversion.BuiltIn.ColorConverter());
-            ConverterRegistry.RegisterConverter(new global::SaveFramework.Runtime.Core.Conversion.BuiltIn.QuaternionConverter());
-            ConverterRegistry.RegisterConverter(new global::SaveFramework.Runtime.Core.Conversion.BuiltIn.Vector2Converter());
-            ConverterRegistry.RegisterConverter(new global::SaveFramework.Runtime.Core.Conversion.BuiltIn.Vector3Converter());
-            ConverterRegistry.RegisterConverter(new global::SaveFramework.Runtime.Core.Conversion.BuiltIn.Vector4Converter());
+            RegisterByName("SaveFramework.Runtime.Core.Conversion.BuiltIn.BoundsConverter, SaveFrameworl.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            RegisterByName("SaveFramework.Runtime.Core.Conversion.BuiltIn.ColorConverter, SaveFrameworl.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            RegisterByName("SaveFramework.Runtime.Core.Conversion.BuiltIn.QuaternionConverter, SaveFrameworl.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            RegisterByName("SaveFramework.Runtime.Core.Conversion.BuiltIn.Vector2Converter, SaveFrameworl.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            RegisterByName("SaveFramework.Runtime.Core.Conversion.BuiltIn.Vector3Converter, SaveFrameworl.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            RegisterByName("SaveFramework.Runtime.Core.Conversion.BuiltIn.Vector4Converter, SaveFrameworl.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+        }
+
+        private static void RegisterByName(string assemblyQualifiedName)
+        {
+            var type = System.Type.GetType(assemblyQualifiedName, throwOnError: false);
+
+            if (type == null)
+            {
+                // 兜底：遍历已加载程序集（处理部分平台解析不出 AQN 的情况）
+                foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    var typeName = assemblyQualifiedName.Split(',')[0].Trim();
+                    type = asm.GetType(typeName);
+                    if (type != null) break;
+                }
+            }
+
+            if (type == null)
+            {
+                UnityEngine.Debug.LogWarning($"[SaveFramework] Converter type not found: {assemblyQualifiedName}");
+                return;
+            }
+
+            try
+            {
+                var instance = (SaveFramework.Runtime.Core.Conversion.IValueConverter)System.Activator.CreateInstance(type);
+                SaveFramework.Runtime.Core.Conversion.ConverterRegistry.RegisterConverter(instance);
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogError($"[SaveFramework] Failed to instantiate converter {assemblyQualifiedName}: {ex}");
+            }
         }
     }
 }

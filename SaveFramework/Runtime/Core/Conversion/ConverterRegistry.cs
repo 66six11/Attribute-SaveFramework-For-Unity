@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SaveFramework.Runtime.Core.Conversion
 {
     /// <summary>
-    /// Attribute to mark converters for automatic registration
+    ///自动配准的标记转换器的属性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class AutoRegisterConverterAttribute : Attribute
@@ -22,13 +22,9 @@ namespace SaveFramework.Runtime.Core.Conversion
         private static readonly Dictionary<Type, IValueConverter> converters = new Dictionary<Type, IValueConverter>();
         private static bool isInitialized = false;
 
-        /// <summary>
-        /// 通过发现和注册所有自动注册的转换器来初始化转换器注册表
-        /// </summary>
-       
 
         /// <summary>
-        /// Manually register a converter
+        /// 手动注册转换器
         /// </summary>
         public static void RegisterConverter(IValueConverter converter)
         {
@@ -43,7 +39,6 @@ namespace SaveFramework.Runtime.Core.Conversion
         /// </summary>
         public static IValueConverter GetConverter(Type type)
         {
-          
             return converters.TryGetValue(type, out var converter) ? converter : null;
         }
 
@@ -52,7 +47,6 @@ namespace SaveFramework.Runtime.Core.Conversion
         /// </summary>
         public static bool HasConverter(Type type)
         {
-          
             return converters.ContainsKey(type);
         }
 
@@ -61,7 +55,6 @@ namespace SaveFramework.Runtime.Core.Conversion
         /// </summary>
         public static Type[] GetSupportedTypes()
         {
-            
             return converters.Keys.ToArray();
         }
 
@@ -92,7 +85,5 @@ namespace SaveFramework.Runtime.Core.Conversion
 
             return false;
         }
-
-      
     }
 }
