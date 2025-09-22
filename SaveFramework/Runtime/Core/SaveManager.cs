@@ -9,7 +9,7 @@ using UnityEngine;
 namespace SaveFramework.Runtime.Core
 {
     /// <summary>
-    /// Main manager for the Save Framework
+    /// 保存框架的主管理器
     /// </summary>
     public class SaveManager : MonoBehaviour
     {
@@ -60,7 +60,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Set a custom save backend
+        /// 设置自定义保存后端
         /// </summary>
         public void SetBackend(ISaveBackend customBackend)
         {
@@ -68,7 +68,7 @@ namespace SaveFramework.Runtime.Core
         }
 
         /// <summary>
-        /// Save all SaveId components to the specified slot
+        /// 将所有 SaveId 组件保存到指定的插槽中
         /// </summary>
         public void Save(string slotName)
         {
