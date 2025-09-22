@@ -1,0 +1,64 @@
+name: Release on tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 将 UPM 结构拷贝为 Assets/Plugins/SaveFramework，用于打 unitypackage（无需 Unity 许可）
+      - name: Prepare Assets layout for unitypackage
+        shell: bash
+        run: |
+          set -eux
+          mkdir -p "Assets/Plugins/SaveFramework"
+          rsync -av Runtime/ "Assets/Plugins/SaveFramework/Runtime/" || true
+          rsync -av Editor/  "Assets/Plugins/SaveFramework/Editor/"  || true
+          # 若需要包含 Generated，则取消注释
+          if [ -d Generated ]; then
+            rsync -av Generated/ "Assets/Plugins/SaveFramework/Generated/"
+          fi
+
+      # 使用现成 action 生成 .unitypackage（要求文件具备 .meta，仓库已包含）
+      - name: Create .unitypackage
+        uses: pCYSl5EDgo/create-unitypackage@v1
+        with:
+          package-paths: |
+            Assets/Plugins/SaveFramework
+          output-name: SaveFramework-${{ github.ref_name }}.unitypackage
+
+      # 额外打一个 UPM 结构的 zip，便于离线导入或镜像分发
+      - name: Create UPM zip
+        shell: bash
+        run: |
+          set -eux
+          zip -r "SaveFramework-UPM-${{ github.ref_name }}.zip" \
+            package.json Runtime Editor Sample \
+            README.md README_EN.md QUICKREF.md CHANGELOG.md \
+            2>/dev/null || true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: SaveFramework ${{ github.ref_name }}
+          body: |
+            Automated release for tag ${{ github.ref_name }}.
+
+            Assets:
+            - SaveFramework-${{ github.ref_name }}.unitypackage (Assets/Plugins layout)
+            - SaveFramework-UPM-${{ github.ref_name }}.zip (UPM package)
+          files: |
+            SaveFramework-${{ github.ref_name }}.unitypackage
+            SaveFramework-UPM-${{ github.ref_name }}.zip
