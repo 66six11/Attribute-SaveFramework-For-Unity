@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SaveFramework.Runtime.Core
 {
     /// <summary>
-    /// File-based save backend using JSON format
+    /// 使用 JSON 格式的基于文件的保存后端
     /// </summary>
     public class FileBackend : ISaveBackend
     {
