@@ -8,13 +8,13 @@ using UnityEngine;
 namespace SaveFramework.Runtime.Core.Conversion
 {
     /// <summary>
-    /// Utility for parsing numeric arrays from various JSON and object formats
-    /// Handles JArray, JObject{x,y,z,w}/{r,g,b,a}, managed arrays, IEnumerable, and Unity types
+    /// 用于解析各种 JSON 和对象格式的数值数组的实用程序
+    /// 处理 JArray、JObject{x，y，z，w}/{r，g，b，a}、托管数组、IEnumerable 和 Unity 类型
     /// </summary>
     public static class NumericArrayReader
     {
         /// <summary>
-        /// Parse a float array from various input formats
+        /// 从各种输入格式解析浮点数组
         /// </summary>
         public static float[] ReadFloatArray(object obj)
         {
@@ -28,7 +28,7 @@ namespace SaveFramework.Runtime.Core.Conversion
             if (obj is Vector4 v4) return new[] { v4.x, v4.y, v4.z, v4.w };
             if (obj is Quaternion q) return new[] { q.x, q.y, q.z, q.w };
 
-            // JObject with named properties (e.g., {x: 1, y: 2, z: 3} or {r: 1, g: 0, b: 0, a: 1})
+            // 具有命名属性的 JObject (e.g., {x: 1, y: 2, z: 3} or {r: 1, g: 0, b: 0, a: 1})
             if (obj is JObject jObj)
             {
                 return ReadFromJObject(jObj);
@@ -79,7 +79,7 @@ namespace SaveFramework.Runtime.Core.Conversion
         }
 
         /// <summary>
-        /// Parse integer array from various input formats
+        /// 解析来自各种输入格式的整数数组
         /// </summary>
         public static int[] ReadIntArray(object obj)
         {

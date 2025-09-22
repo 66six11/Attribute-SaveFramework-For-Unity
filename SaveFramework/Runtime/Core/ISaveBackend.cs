@@ -4,32 +4,32 @@ using System.Collections.Generic;
 namespace SaveFramework.Runtime.Core
 {
     /// <summary>
-    /// Interface for save data storage backends
+    /// 保存数据存储后端的接口
     /// </summary>
     public interface ISaveBackend
     {
         /// <summary>
-        /// Save data to the specified slot
+        /// 将数据保存到指定插槽
         /// </summary>
         void Save(string slotName, Dictionary<string, object> data);
 
         /// <summary>
-        /// Load data from the specified slot
+        /// 从指定插槽加载数据
         /// </summary>
         Dictionary<string, object> Load(string slotName);
 
         /// <summary>
-        /// Check if a save slot exists
+        /// 检查是否存在保存槽
         /// </summary>
         bool HasSave(string slotName);
 
         /// <summary>
-        /// Delete a save slot
+        /// 删除保存槽
         /// </summary>
         void DeleteSave(string slotName);
 
         /// <summary>
-        /// Get all available save slot names
+        /// 获取所有可用的保存槽名称
         /// </summary>
         string[] GetSaveSlots();
     }
